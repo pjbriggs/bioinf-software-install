@@ -2,18 +2,22 @@
 #
 # Install Python package
 #
-# Installation script for installing a Python package from
-# an archive on the local system
+# Script for installing a Python package into an arbitray local using an
+# arbitrary Python version, from an archive file on the local system
 #
-PYTHON=$1
-TARGZ=$2
-INSTALL_DIR=$3
-if [ -z "$PYTHON" ] || [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
-  echo Usage: $(basename $0) PYTHON TARGZ INSTALL_DIR
-  exit 1
-fi
-#
-function lowercase() {
+function full_path() {
+    # Convert relative path to full path by prepending PWD
+    if [ -z "$1" ] ; then
+	echo $1
+    fi
+    local is_abs=$(echo $1 | grep "^/")
+    if [ -z "$is_abs" ] ; then
+	echo $(pwd)/${1#./}
+    else
+	echo $1
+    fi
+}
+function to_lower() {
     # Convert string to lowercase
     echo $(echo $1 | tr [:upper:] [:lower:])
 }
@@ -63,6 +67,18 @@ function install_package() {
     echo -n Entering directory $(package_dir $1)...
     cd $(package_dir $1)
     echo done
+    echo -n Checking python...
+    if [ -f $3 ] && [ -x $3 ] ; then
+	echo ok
+    else
+	echo FAILED
+	echo $3 is not an executable file
+	if [ -d $3 ] ; then
+	    echo Did you mean $3/python?
+	fi
+	echo ERROR $3 is not an executable file >&2
+	exit 1
+    fi
     echo -n Detecting python version...
     local python_version=python$(python_version $3)
     echo $python_version
@@ -83,6 +99,16 @@ function install_package() {
 	exit 1
     fi
 }
+# Main script
+PYTHON=$1
+TARGZ=$2
+INSTALL_DIR=$3
+if [ -z "$PYTHON" ] || [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
+  echo Usage: $(basename $0) PYTHON TARGZ INSTALL_DIR
+  exit 1
+fi
+PYTHON=$(full_path $PYTHON)
+INSTALL_DIR=$(full_path $INSTALL_DIR)
 echo "## Install $(package_name $TARGZ) ##"
 echo Archive $TARGZ
 echo Version $(package_version $TARGZ)
