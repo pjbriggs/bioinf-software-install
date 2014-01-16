@@ -49,7 +49,7 @@ $PYTHON_BIN/easy_install pip >> install.log 2>&1
 echo done
 echo "## INSTALL ADDITIONAL PACKAGES ##"
 PIP_INSTALL="$PYTHON_BIN/pip install --no-use-wheel" 
-PYPI_PACKAGES="yolk numpy==1.6.1 scipy==0.12.0 matplotlib==1.1.1 Cython==0.15.1"
+PYPI_PACKAGES="yolk numpy==1.6.1 scipy==0.12.0 Cython==0.15.1"
 echo Installing packages using \"$PIP_INSTALL\"
 for package in $PYPI_PACKAGES ; do
    echo -n Installing $package...
