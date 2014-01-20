@@ -24,7 +24,7 @@ fi
 echo -n Building in $PERL_DIR...
 cd $PERL_DIR
 ./Configure -des -Dprefix=$INSTALL_DIR > build.log 2>&1
-make > build.log 2>&1
+make >> build.log 2>&1
 echo done
 echo -n Installing to $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
