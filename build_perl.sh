@@ -2,6 +2,8 @@
 #
 # Build perl
 #
+. $(dirname $0)/functions.sh
+#
 TARGZ=$1
 INSTALL_DIR=$2
 if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
@@ -9,13 +11,13 @@ if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
   exit 1
 fi
 #
-TARGZ_BASE=$(basename $TARGZ)
-PERL_DIR=${TARGZ_BASE%.tar.gz}
-PERL_VER=$(echo $PERL_DIR | cut -d"-" -f2)
+PERL_DIR=$(package_dir $TARGZ)
+PERL_VER=$(package_version $TARGZ)
+INSTALL_DIR=$(full_path $INSTALL_DIR)
 echo Build perl from $TARGZ
 echo Version $PERL_VER
 echo -n Unpacking...
-tar -zxf $TARGZ
+unpack_archive $TARGZ
 echo done
 if [ ! -d $PERL_DIR ] ; then
   echo ERROR no directory $PERL_DIR found >&2

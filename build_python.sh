@@ -2,6 +2,8 @@
 #
 # Build python
 #
+. $(dirname $0)/functions.sh
+#
 TARGZ=$1
 INSTALL_DIR=$2
 if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
@@ -9,9 +11,9 @@ if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
   exit 1
 fi
 #
-TARGZ_BASE=$(basename $TARGZ)
-PYTHON_DIR=${TARGZ_BASE%.tgz}
-PYTHON_VER=$(echo $PYTHON_DIR | cut -d"-" -f2)
+PYTHON_DIR=$(package_dir $TARGZ)
+PYTHON_VER=$(package_version $TARGZ)
+INSTALL_DIR=$(full_path $INSTALL_DIR)
 echo Build python from $TARGZ
 echo Version $PYTHON_VER
 echo "## BUILD AND INSTALL PYTHON ##"
