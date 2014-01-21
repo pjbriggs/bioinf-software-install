@@ -5,64 +5,8 @@
 # Script for installing a Python package into an arbitray local using an
 # arbitrary Python version, from an archive file on the local system
 #
-function full_path() {
-    # Convert relative path to full path by prepending PWD
-    if [ -z "$1" ] ; then
-	echo $1
-    fi
-    local is_abs=$(echo $1 | grep "^/")
-    if [ -z "$is_abs" ] ; then
-	echo $(pwd)/${1#./}
-    else
-	echo $1
-    fi
-}
-function to_lower() {
-    # Convert string to lowercase
-    echo $(echo $1 | tr [:upper:] [:lower:])
-}
-function python_version() {
-    echo $($1 --version 2>&1 | cut -d" " -f2 | cut -d. -f1-2)
-}
-function prepend_path() {
-    # 1: path variable name
-    eval local path=\$$1
-    if [ -z "$path" ] ; then
-	eval $1=$2
-    else
-	eval $1=$2:$path
-    fi
-}
-function package_dir() {
-    # 1: tar.gz file
-    local targz=$(basename $1)
-    if [ ! -z "$(echo $1 | grep tar.gz)" ] ; then
-	local tgz=tar.gz
-    else
-	local tgz=tgz
-    fi
-    echo ${targz%.$tgz}
-}
-function package_name() {
-    # 1: tar.gz file
-    echo $(package_dir $1) | cut -d"-" -f1
-}
-function package_version() {
-    # 1: tar.gz file
-    echo $(package_dir $1) | cut -d"-" -f2
-}
-function unpack_archive() {
-    # 1: tar.gz file
-    echo -n Unpacking $1...
-    tar -zxf $1
-    if [ -d $(package_dir $1) ] ; then
-	echo done
-    else
-	echo FAILED
-	echo ERROR no directory $(package_dir $1) found >&2
-	exit 1
-    fi
-}
+. $(dirname $0)/functions.sh
+#
 function install_package() {
     echo -n Entering directory $(package_dir $1)...
     cd $(package_dir $1)
