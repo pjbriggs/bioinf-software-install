@@ -31,5 +31,7 @@ echo -n Installing to $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
 make install > install.log 2>&1
 echo done
+cd ..
+clean_up $TARGZ
 ##
 #

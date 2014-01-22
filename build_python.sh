@@ -32,7 +32,6 @@ echo -n Installing to $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
 make install > install.log 2>&1
 echo done
-clean_up $TARGZ
 echo "## INSTALL EASY_INSTALL/PIP ##"
 EZ_SETUP_URL=http://peak.telecommunity.com/dist/ez_setup.py
 wget_url $EZ_SETUP_URL
@@ -59,5 +58,8 @@ for package in $PYPI_PACKAGES ; do
      echo FAILED
    fi
 done
+# Finish by cleaning up
+cd ..
+clean_up $TARGZ
 ##
 #
