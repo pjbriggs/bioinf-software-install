@@ -78,6 +78,10 @@ function package_version() {
 function unpack_archive() {
     # Unpack targz archive to cwd
     # 1: archive file
+    if [ ! -f "$1" ] ; then
+	echo ERROR no archive file '$1' >&2
+	exit 1
+    fi
     echo -n Determining archive type...
     local type=${1##*.}
     echo $type
@@ -171,6 +175,7 @@ function install_python_package() {
 	echo FAILED
 	exit 1
     fi
+    cd ..
 }
 ##
 #
