@@ -36,12 +36,19 @@ to build and install to `${OPT}/python/2.7.2`
 
 To install library packages into a non-root location, use:
 
-    install_python_package ${OPT}/python/2.7.2/bin/python numpy-1.8.0.tar.gz ${SITE_PYTHON}
+    install_python_package.sh ${OPT}/python/2.7.2/bin/python numpy-1.8.0.tar.gz ${SITE_PYTHON}
 
-To make the packages available:
+To make the library packages available:
 
     export PATH=${SITE_PYTHON}/bin:$PATH
     export PYTHONPATH=${SITE_PYTHON}/lib/python2.7/site-packages:$PYTHONPATH
+
+To install applications into their own version-specific locations, use:
+
+    install_python_app.sh ${OPT}/python/2.7.2/bin/python HTSeq-0.5.4p5.tar.gz ${OPT}
+
+You will need to add the `bin` and `lib/python-2.7/site-packages` directories
+to `PATH` and `PYTHONPATH` respectively.
 
 Perl
 ----
