@@ -24,5 +24,6 @@ echo Using Python from $(dirname $PYTHON)
 echo Installing under $INSTALL_DIR
 unpack_archive $TARGZ
 install_python_package $TARGZ $INSTALL_DIR $PYTHON
+clean_up $TARGZ
 ##
 #
