@@ -7,18 +7,17 @@
 TARGZ=$1
 INSTALL_DIR=$2
 if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
-  echo Usage $(basename $0) TARGZ INSTALL_DIR
+  echo Usage: $(basename $0) TARGZ INSTALL_DIR
+  echo Installs perl to INSTALL_DIR/perl/VERSION
   exit 1
 fi
 #
 PERL_DIR=$(package_dir $TARGZ)
 PERL_VER=$(package_version $TARGZ)
-INSTALL_DIR=$(full_path $INSTALL_DIR)
+INSTALL_DIR=$(full_path $INSTALL_DIR)/perl/$PERL_VER
 echo Build perl from $TARGZ
 echo Version $PERL_VER
-echo -n Unpacking...
 unpack_archive $TARGZ
-echo done
 if [ ! -d $PERL_DIR ] ; then
   echo ERROR no directory $PERL_DIR found >&2
   exit 1
