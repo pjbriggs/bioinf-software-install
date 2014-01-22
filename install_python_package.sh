@@ -23,7 +23,7 @@ echo Version $(package_version $TARGZ)
 echo Using Python from $(dirname $PYTHON)
 echo Installing under $INSTALL_DIR
 unpack_archive $TARGZ
-install_python_package $TARGZ $INSTALL_DIR $PYTHON
+install_python_package $PYTHON $TARGZ $INSTALL_DIR
 clean_up $TARGZ
 ##
 #

@@ -55,7 +55,7 @@ function wget_url() {
 function package_dir() {
     # Get directory for package in targz archive
     # 1: tar.gz file
-    local targz=$(basename $1)
+    local targz=$(basename "$1")
     if [ ! -z "$(echo $1 | grep tar.gz)" ] ; then
 	local tgz=tar.gz
     elif [ ! -z "$(echo $1 | grep tgz)" ] ; then
@@ -138,36 +138,36 @@ function pip_install() {
 }
 function install_python_package() {
     # Install a Python package from an archive
-    # 1: archive file
-    # 2: installation directory
-    # 3: Python interpreter
-    echo -n Entering directory $(package_dir $1)...
-    cd $(package_dir $1)
+    # 1: Python interpreter
+    # 2: archive file
+    # 3: installation directory
+    echo -n Entering directory $(package_dir $2)...
+    cd $(package_dir $2)
     echo done
     echo -n Checking python...
-    if [ -f $3 ] && [ -x $3 ] ; then
+    if [ -f $1 ] && [ -x $1 ] ; then
 	echo ok
     else
 	echo FAILED
-	echo $3 is not an executable file
-	if [ -d $3 ] ; then
-	    echo Did you mean $3/python?
+	echo $1 is not an executable file
+	if [ -d $1 ] ; then
+	    echo Did you mean $1/python?
 	fi
-	echo ERROR $3 is not an executable file >&2
+	echo ERROR $1 is not an executable file >&2
 	exit 1
     fi
     echo -n Detecting python version...
-    local python_version=python$(python_version $3)
+    local python_version=python$(python_version $1)
     echo $python_version
-    local lib_dir=$2/lib/$python_version/site-packages
+    local lib_dir=$3/lib/$python_version/site-packages
     echo -n Making $lib_dir...
     mkdir -p $lib_dir
     echo done
     echo -n Prepending $lib_dir to PYTHONPATH...
     prepend_path PYTHONPATH $lib_dir
     echo done
-    echo -n Installing into $2...
-    local install_cmd="$3 setup.py install --prefix=$2"
+    echo -n Installing into $3...
+    local install_cmd="$1 setup.py install --prefix=$3"
     $install_cmd > install.log 2>&1
     if [ "$?" -eq 0 ] ; then
 	echo done
