@@ -46,19 +46,6 @@ echo done
 echo -n Installing pip...
 $PYTHON_BIN/easy_install pip >> install.log 2>&1
 echo done
-echo "## INSTALL ADDITIONAL PACKAGES ##"
-PYPI_PACKAGES="yolk numpy==1.6.1 scipy==0.12.0 Cython==0.15.1"
-echo Installing additional packages using pip
-for package in $PYPI_PACKAGES ; do
-   pip_install $PYTHON_BIN $package
-   status=$?
-   if [ "$status" -eq 0 ] ; then
-     echo done
-   else
-     echo FAILED
-   fi
-done
-# Finish by cleaning up
 cd ..
 clean_up $TARGZ
 ##
