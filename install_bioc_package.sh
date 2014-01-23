@@ -16,9 +16,12 @@ if [ -z "$R_EXE" ] || [ -z "$PACKAGE" ] || [ -z "$INSTALL_DIR" ] ; then
   exit 1
 fi
 R_EXE=$(full_path $R_EXE)
-INSTALL_DIR=$(full_path $INSTALL_DIR)
+R_VER=$(R_version $R_EXE)
+INSTALL_DIR=$(full_path $INSTALL_DIR)/$R_VER
+PACKAGE_NAME=$(package_dir $PACKAGE)
 echo "## Install $(basename $PACKAGE) ##"
 echo Using R from $(dirname $R_EXE)
+echo R version $R_VER
 echo Installing under $INSTALL_DIR
 if [ ! -d "$INSTALL_DIR" ] ; then
     echo -n Making $INSTALL_DIR...
@@ -29,12 +32,19 @@ echo -n Prepending $INSTALL_DIR to R_LIBS...
 prepend_path R_LIBS $INSTALL_DIR
 echo done
 echo -n Running biocLite.R in R...
-$R_EXE --vanilla &> $(package_dir $PACKAGE).install.log <<EOF
+$R_EXE --vanilla &> $PACKAGE_NAME.$R_VER.install.log <<EOF
 source("http://bioconductor.org/biocLite.R")
 biocLite()
 biocLite("$PACKAGE",lib="$INSTALL_DIR")
 q()
 EOF
 echo done
+echo -n Checking $PACKAGE_NAME was installed...
+if [ ! -z "$(R_package_installed $R_EXE $PACKAGE_NAME)" ] ; then
+    echo ok
+else
+    echo FAILED
+    exit 1
+fi
 ##
 #

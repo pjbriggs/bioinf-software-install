@@ -17,8 +17,8 @@ if [ -z "$R_EXE" ] || [ -z "$PACKAGE" ] || [ -z "$INSTALL_DIR" ] ; then
   exit 1
 fi
 R_EXE=$(full_path $R_EXE)
-INSTALL_DIR=$(full_path $INSTALL_DIR)
-echo "## Install $(basename $PACKAGE) ##"
+R_VER=$(R_version $R_EXE)
+INSTALL_DIR=$(full_path $INSTALL_DIR)/$R_VER
 if [ -f "$(full_path $PACKAGE)" ] ; then
     PACKAGE=$(full_path $PACKAGE)
     echo Found local file $PACKAGE
@@ -29,7 +29,10 @@ else
     R_REPO=\"http://cran.ma.imperial.ac.uk/\"
     EXTRA_ARGS=
 fi
+PACKAGE_NAME=$(package_name $PACKAGE)
+echo "## Install $PACKAGE_NAME ##"
 echo Using R from $(dirname $R_EXE)
+echo R version $R_VER
 echo CRAN repo set to $R_REPO
 echo Installing under $INSTALL_DIR
 if [ ! -d "$INSTALL_DIR" ] ; then
@@ -41,10 +44,17 @@ echo -n Prepending $INSTALL_DIR to R_LIBS...
 prepend_path R_LIBS $INSTALL_DIR
 echo done
 echo -n Running install.packages in R...
-$R_EXE --vanilla &> $(package_dir $PACKAGE).install.log <<EOF
+$R_EXE --vanilla &> $PACKAGE_NAME.$R_VER.install.log <<EOF
 install.packages("$PACKAGE",lib="$INSTALL_DIR",repos=$R_REPO$EXTRA_ARGS)
 q()
 EOF
 echo done
+echo -n Checking $PACKAGE_NAME was installed...
+if [ ! -z "$(R_package_installed $R_EXE $PACKAGE_NAME)" ] ; then
+    echo ok
+else
+    echo FAILED
+    exit 1
+fi
 ##
 #
