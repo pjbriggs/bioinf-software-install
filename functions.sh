@@ -28,6 +28,20 @@ function python_version() {
     # Fetch Python version
     echo $($1 --version 2>&1 | cut -d" " -f2 | cut -d. -f1-2)
 }
+function R_version() {
+    # Fetch R version
+    echo $($1 --version 2>&1 | grep "^R version" | cut -d" " -f3 | cut -d. -f1-2)
+}
+function R_package_installed() {
+    # Crude way of checking if an R package is installed
+    # 1: R executable
+    # 2: package name
+    if [ ! -z "$(echo 'installed.packages()' | $1 --vanilla | grep ^$2)" ] ; then
+	echo $2
+    else
+	echo ''
+    fi
+}
 function prepend_path() {
     # Prepend path to path-type variable
     # 1: path variable name e.g. PATH
