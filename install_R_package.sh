@@ -2,8 +2,9 @@
 #
 # Install R package
 #
-# Script for installing an R package into an arbitray local using an
-# arbitrary R version, using either a local tar.gz file or via CRAN
+# Script for installing an R package into an arbitrary location
+# using an arbitrary R version, using either a local tar.gz file
+# or via CRAN
 #
 . $(dirname $0)/functions.sh
 #
@@ -17,10 +18,19 @@ if [ -z "$R_EXE" ] || [ -z "$PACKAGE" ] || [ -z "$INSTALL_DIR" ] ; then
 fi
 R_EXE=$(full_path $R_EXE)
 INSTALL_DIR=$(full_path $INSTALL_DIR)
-CRAN_REPO="http://cran.ma.imperial.ac.uk/"
-echo "## Install $PACKAGE_NAME ##"
+echo "## Install $(basename $PACKAGE) ##"
+if [ -f "$(full_path $PACKAGE)" ] ; then
+    PACKAGE=$(full_path $PACKAGE)
+    echo Found local file $PACKAGE
+    R_REPO=NULL
+    EXTRA_ARGS=",type=\"source\""
+else
+    echo Attempting to fetch $PACKAGE from CRAN
+    R_REPO=\"http://cran.ma.imperial.ac.uk/\"
+    EXTRA_ARGS=
+fi
 echo Using R from $(dirname $R_EXE)
-echo CRAN repo set to $CRAN_REPO
+echo CRAN repo set to $R_REPO
 echo Installing under $INSTALL_DIR
 if [ ! -d "$INSTALL_DIR" ] ; then
     echo -n Making $INSTALL_DIR...
@@ -30,11 +40,11 @@ fi
 echo -n Prepending $INSTALL_DIR to R_LIBS...
 prepend_path R_LIBS $INSTALL_DIR
 echo done
-$R_EXE --vanilla &> $PACKAGE_NAME.install.log <<EOF
-install.packages("$PACKAGE",lib="$INSTALL_DIR",repos="$CRAN_REPO")
+echo -n Running install.packages in R...
+$R_EXE --vanilla &> $(package_dir $PACKAGE).install.log <<EOF
+install.packages("$PACKAGE",lib="$INSTALL_DIR",repos=$R_REPO$EXTRA_ARGS)
 q()
 EOF
-##clean_up $TARGZ
+echo done
 ##
 #
-
