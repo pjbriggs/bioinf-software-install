@@ -53,7 +53,11 @@ to `PATH` and `PYTHONPATH` respectively.
 Perl
 ----
 
-TBA
+Use 
+
+    build_perl.sh perl-5.18.1.tar.gz $OPT
+
+to build and install to `${OPT}/perl/5.18.1`
 
 R and Bioconductor
 ------------------
@@ -74,9 +78,13 @@ downloaded archive file:
 
     install_R_package.sh ${OPT}/R/3.0.2/bin/R zinba_2.02.03.tar.gz ${SITE_R}
 
-To make the packages available:
+The scripts attempt to version the libraries against different R versions
+so to make the packages available:
 
-    export R_LIBS=${SITE_R}:$R_LIBS
+    export R_LIBS=${SITE_R}/${RVERSION}:$R_LIBS
+
+where `RVERSION` is the `MAJOR.MINOR` version number (for example for
+R 3.0.2, `RVERSION=3.0`).
 
 (NB R also supports `R_LIBS_USER` and `R_LIBS_SITE` variables.)
 
@@ -88,12 +96,15 @@ To install Bioconductor packages use:
 
 This is a work in progress.
 
-Note that there is no error checking so installations might fail and
-we wouldn't know.
-
 To check if a package is available do:
 
     library("<package>")
+
+or,
+
+    installed.packages()
+
+to get a list of all the installed packages.
 
 To update a CRAN package do
 
