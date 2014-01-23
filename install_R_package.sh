@@ -16,7 +16,6 @@ if [ -z "$R_EXE" ] || [ -z "$PACKAGE" ] || [ -z "$INSTALL_DIR" ] ; then
   exit 1
 fi
 R_EXE=$(full_path $R_EXE)
-PACKAGE_NAME=$PACKAGE
 INSTALL_DIR=$(full_path $INSTALL_DIR)
 CRAN_REPO="http://cran.ma.imperial.ac.uk/"
 echo "## Install $PACKAGE_NAME ##"
@@ -28,6 +27,9 @@ if [ ! -d "$INSTALL_DIR" ] ; then
     mkdir -p $INSTALL_DIR
     echo done
 fi
+echo -n Prepending $INSTALL_DIR to R_LIBS...
+prepend_path R_LIBS $INSTALL_DIR
+echo done
 $R_EXE --vanilla &> $PACKAGE_NAME.install.log <<EOF
 install.packages("$PACKAGE",lib="$INSTALL_DIR",repos="$CRAN_REPO")
 q()
