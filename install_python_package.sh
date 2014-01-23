@@ -2,8 +2,9 @@
 #
 # Install Python package
 #
-# Script for installing a Python package into an arbitray local using an
-# arbitrary Python version, from an archive file on the local system
+# Script for installing a Python package into an arbitrary location
+# using an arbitrary Python version, from an archive file on the
+# local system
 #
 . $(dirname $0)/functions.sh
 #
