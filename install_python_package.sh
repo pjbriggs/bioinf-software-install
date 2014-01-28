@@ -17,7 +17,8 @@ if [ -z "$PYTHON" ] || [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
   exit 1
 fi
 PYTHON=$(full_path $PYTHON)
-INSTALL_DIR=$(full_path $INSTALL_DIR)
+PYTHON_VER=$(python_version $PYTHON)
+INSTALL_DIR=$(full_path $INSTALL_DIR)/$PYTHON_VER
 echo "## Install $(package_name $TARGZ) ##"
 echo Archive $TARGZ
 echo Version $(package_version $TARGZ)
