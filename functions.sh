@@ -26,6 +26,7 @@ function to_lower() {
 }
 function python_version() {
     # Fetch Python version
+    # 1: python executable (incl path if necessary)
     echo $($1 --version 2>&1 | cut -d" " -f2 | cut -d. -f1-2)
 }
 function R_version() {
