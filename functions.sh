@@ -92,7 +92,13 @@ function package_version() {
 }
 function unpack_archive() {
     # Unpack targz archive to cwd
+    # --no-package-dir-check: don't check if package dir exists
     # 1: archive file
+    local package_dir_check=yes
+    if [ "$1" == "--no-package-dir-check" ] ; then
+	package_dir_check=
+	shift
+    fi
     if [ ! -f "$1" ] ; then
 	echo ERROR no archive file '$1' >&2
 	exit 1
@@ -108,14 +114,20 @@ function unpack_archive() {
 	bz2)
 	    tar_options=j${tar_options}
 	    ;;
+	zip)
+	    ;;
 	*)
 	    echo "Unrecognised compression type '$type'" >&2
 	    exit 1
 	    ;;
     esac
     echo -n Unpacking $1...
-    tar -$tar_options $1
-    if [ -d $(package_dir $1) ] ; then
+    if [ "$type" == "zip" ] ; then
+	unzip -qq -o $1
+    else
+	tar -$tar_options $1
+    fi
+    if [ -z "$package_dir_check" ] || [ -d $(package_dir $1) ] ; then
 	echo done
     else
 	echo FAILED
