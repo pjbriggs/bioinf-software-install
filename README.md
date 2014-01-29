@@ -50,8 +50,8 @@ To install library packages under a non-root location (e.g. `SITE_PYTHON`), use:
 
 To make the library packages available:
 
-    export PATH=${SITE_PYTHON}/bin:$PATH
-    export PYTHONPATH=${SITE_PYTHON}/lib/python2.7/site-packages:$PYTHONPATH
+    export PATH=${SITE_PYTHON}/2.7/bin:$PATH
+    export PYTHONPATH=${SITE_PYTHON}/2.7/lib/python2.7/site-packages:$PYTHONPATH
 
 To install applications under their own version-specific locations, use:
 
