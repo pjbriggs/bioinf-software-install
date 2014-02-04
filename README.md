@@ -1,8 +1,13 @@
 Scripts to help with building and deploying bioinformatics software
 ===================================================================
 
-Various random scripts to help with building and deploying software used for
-bioinformatics (python, perl, R).
+Various random scripts to help with building and deploying software used
+for bioinformatics (python, perl, R).
+
+The intention is to provide support for "managed installations" of
+different versions of Python, Perl and R which are completely
+independent of those provided via the system's package manager (e.g.
+yum).
 
 Overview
 --------
@@ -19,11 +24,16 @@ e.g.
 where `OPT` is a stand-in for the top level installation location.
 
 For specific Python, perl or R libraries we prefer to install to
-site-specific locations
+site-specific locations, e.g.
 
     ${OPT_LIBS}/site-python
     ${OPT_LIBS}/site-perl
     ${OPT_LIBS}/R
+
+within which there is also a level of versioning, e.g.
+
+    ${SITE_R}/3.0
+
 
 Python
 ------
@@ -100,11 +110,16 @@ To check if a package is available do:
 
     library("<package>")
 
-or,
+to try and load it, or
 
     installed.packages()
 
 to get a list of all the installed packages.
+
+When installing from archive files the archive file name should be in
+the format `<NAME>-<VERSION>.tar.gz` i.e. using a hyphen to separate the
+name from the version. If a character other than a hyphen is used then
+the package name will not be correctly guessed.
 
 To update a CRAN package do
 
