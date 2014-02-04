@@ -190,6 +190,9 @@ function install_python_package() {
 	echo FAILED
 	exit 1
     fi
+    echo -n Setting read permissions on EGG-INFO files...
+    find $lib_dir -type d -name "EGG-INFO" -exec chmod -R +rX {} \;
+    echo done
     cd ..
 }
 ##
