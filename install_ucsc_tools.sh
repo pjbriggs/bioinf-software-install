@@ -51,7 +51,13 @@ echo done
 echo -n Building in src...
 cd src
 make utils blatSuite >> ../build.log 2>&1
-echo done
+if [ $? -ne 0 ] ; then
+    echo FAILED
+    echo ERROR failed to build UCSC tools, see $UCSCTOOLS_DIR/build.log >&2
+    exit 1
+else
+    echo done
+fi
 cd ..
 # Copy executables to installation location
 echo -n Copying UCSC tools executables to $INSTALL_DIR...
