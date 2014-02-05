@@ -1,2 +1,1 @@
-python pytz
-python pandas
+python pytz pandas needs pytz

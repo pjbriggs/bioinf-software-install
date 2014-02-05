@@ -1,0 +1,4 @@
+python nose
+python pyparsing
+python tornado needs backports.ssl_match_hostname
+python python-dateutil needs six
