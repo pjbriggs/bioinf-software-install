@@ -1,0 +1,3 @@
+yum expat
+yum expat-devel
+perl BioPerl

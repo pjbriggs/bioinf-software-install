@@ -1,0 +1,6 @@
+R multicore
+R doMC
+R foreach
+R quantreg
+R R.utils
+R ~/Sources/R/zinba-2.02.03.tar.gz

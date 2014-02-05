@@ -130,3 +130,10 @@ at [http://www.bioconductor.org/install]
 
 The Bioconductor installer is quite inefficient as it updates biocLite.R
 each time, and can only be run for one package at a time.
+
+Deps Directory
+--------------
+
+The `deps` directory contains various `.deps` files which are intended to
+list the dependencies for particular packages. For the time being they are
+only used for reference (another work in progress).

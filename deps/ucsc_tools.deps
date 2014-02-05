@@ -1,0 +1,4 @@
+yum mysql-devel
+yum libpng
+yum libpng-devel
+yum libuuid
