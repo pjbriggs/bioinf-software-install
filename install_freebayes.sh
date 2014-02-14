@@ -46,8 +46,17 @@ if [ $? -ne 0 ] ; then
   exit 1
 fi
 echo done
-echo -n Determining freebayes version...
-FREEBAYES_VERSION=$(bin/freebayes | grep ^version: | cut -c9- | tr -d ' ')
+echo -n Determining full freebayes version...
+FULL_FREEBAYES_VERSION=$(bin/freebayes | grep ^version: | cut -c9- | tr -d ' ')
+if [ -z "$FULL_FREEBAYES_VERSION" ] ; then
+  echo FAILED
+  echo Unable to determine version number
+  exit 1
+fi
+echo $FULL_FREEBAYES_VERSION
+echo -n Determining base freebayes version...
+FREEBAYES_VERSION=$(echo $FULL_FREEBAYES_VERSION | tr -d 'v' | cut -d'-' -f1)
+FREEBAYES_VERSION=${FREEBAYES_VERSION%-dirty}
 if [ -z "$FREEBAYES_VERSION" ] ; then
   echo FAILED
   echo Unable to determine version number
