@@ -29,6 +29,17 @@ function python_version() {
     # 1: python executable (incl path if necessary)
     echo $($1 --version 2>&1 | cut -d" " -f2 | cut -d. -f1-2)
 }
+function python_package_installed() {
+    # Crude way of checking if a Python package is installed
+    # 1: python executable
+    # 2: package name
+    local import_package=$($1 -c "import $2" 2>&1 | grep "ImportError: No module named $2")
+    if [ -z "$import_package" ] ; then
+	echo $2
+    else
+	echo ''
+    fi
+}
 function R_version() {
     # Fetch R version
     echo $($1 --version 2>&1 | grep "^R version" | cut -d" " -f3 | cut -d. -f1-2)
