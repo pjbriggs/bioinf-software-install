@@ -29,6 +29,20 @@ function python_version() {
     # 1: python executable (incl path if necessary)
     echo $($1 --version 2>&1 | cut -d" " -f2 | cut -d. -f1-2)
 }
+function python_lib_dir() {
+    # Return full lib directory for Python package installation
+    # e.g. BASE_DIR/lib64/python2.7/site-packages
+    # 1: python executable
+    # 2: top-level library dir e.g. /home/pjb/site-python
+    local version=$(python_version $1)
+    local python_lib=$($1 -c "import distutils.sysconfig; print (distutils.sysconfig.get_python_lib(1,0));")
+    if [ -z "$(echo $python_lib | grep /lib64/)" ] ; then
+	local lib=lib
+    else
+	local lib=lib64
+    fi
+    echo $2/$lib/python$version/site-packages
+}
 function python_package_installed() {
     # Crude way of checking if a Python package is installed
     # 1: python executable
@@ -218,10 +232,9 @@ function install_python_package() {
 	echo ERROR $1 is not an executable file >&2
 	exit 1
     fi
-    echo -n Detecting python version...
-    local python_version=python$(python_version $1)
-    echo $python_version
-    local lib_dir=$3/lib/$python_version/site-packages
+    echo -n Determining library path...
+    local lib_dir=$(python_lib_dir $1 $3)
+    echo $lib_dir
     echo -n Making $lib_dir...
     mkdir -p $lib_dir
     echo done
