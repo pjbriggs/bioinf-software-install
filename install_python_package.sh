@@ -30,6 +30,7 @@ echo Version $(package_version $TARGZ)
 echo Using Python from $(dirname $PYTHON)
 echo Installing under $INSTALL_DIR
 echo -n Checking if $PACKAGE_NAME is already installed...
+prepend_path PYTHONPATH $(python_lib_dir $PYTHON $INSTALL_DIR)
 if [ ! -z "$(python_package_installed $PYTHON $PACKAGE_NAME)" ] ; then
     echo yes
     if [ -z "$force_install" ] ; then
@@ -39,7 +40,7 @@ if [ ! -z "$(python_package_installed $PYTHON $PACKAGE_NAME)" ] ; then
     echo Reinstalling $PACKAGE_NAME
 else
     echo no
-fi 
+fi
 unpack_archive $TARGZ
 install_python_package $PYTHON $TARGZ $INSTALL_DIR
 clean_up $TARGZ
