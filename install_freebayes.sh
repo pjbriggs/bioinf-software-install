@@ -8,7 +8,7 @@ GIT_COMMIT_ID=$1
 INSTALL_DIR=$(full_path $2)
 if [ -z "$GIT_COMMIT_ID" ] || [ -z "$INSTALL_DIR" ] ; then
   echo Usage: $(basename $0) GIT_COMMIT_ID INSTALL_DIR
-  echo Installs freebayes to INSTALL_DIR/freebayes/VERSION
+  echo Installs freebayes to INSTALL_DIR/freebayes/VERSION/GIT_COMMIT_ID
   exit 1
 fi
 GIT_REPO=git://github.com/ekg/freebayes.git
