@@ -23,6 +23,10 @@ fi
 R_EXE=$(full_path $R_EXE)
 R_VER=$(R_version $R_EXE)
 INSTALL_DIR=$(full_path $INSTALL_DIR)/$R_VER
+PACKAGE_NAME=$(package_name $PACKAGE)
+echo "## Install $PACKAGE_NAME ##"
+echo Using R from $(dirname $R_EXE)
+echo R version $R_VER
 if [ -f "$(full_path $PACKAGE)" ] ; then
     PACKAGE=$(full_path $PACKAGE)
     echo Found local file $PACKAGE
@@ -32,12 +36,8 @@ else
     echo Attempting to fetch $PACKAGE from CRAN
     R_REPO=\"http://cran.ma.imperial.ac.uk/\"
     EXTRA_ARGS=
+    echo CRAN repo set to $R_REPO
 fi
-PACKAGE_NAME=$(package_name $PACKAGE)
-echo "## Install $PACKAGE_NAME ##"
-echo Using R from $(dirname $R_EXE)
-echo R version $R_VER
-echo CRAN repo set to $R_REPO
 echo Installing under $INSTALL_DIR
 if [ ! -d "$INSTALL_DIR" ] ; then
     echo -n Making $INSTALL_DIR...
