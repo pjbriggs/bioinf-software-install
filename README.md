@@ -131,6 +131,17 @@ at [http://www.bioconductor.org/install]
 The Bioconductor installer is quite inefficient as it updates biocLite.R
 each time, and can only be run for one package at a time.
 
+Other packages
+--------------
+
+Standalone scripts also exist to build the following bioinformatics
+packages:
+
+ * BEDTools
+ * freebayes
+ * samtools
+ * ucsc_tools
+
 Deps Directory
 --------------
 
