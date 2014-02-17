@@ -49,7 +49,7 @@ prepend_path R_LIBS $INSTALL_DIR
 echo done
 echo -n Checking if $PACKAGE_NAME is already installed...
 if [ ! -z "$(R_package_installed $R_EXE $PACKAGE_NAME)" ] ; then
-    echo yes
+    echo found version $(R_package_installed $R_EXE $PACKAGE_NAME)
     if [ -z "$force_install" ] ; then
 	echo $PACKAGE_NAME already installed, use --force to override
 	exit
