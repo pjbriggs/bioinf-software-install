@@ -45,11 +45,21 @@ function python_lib_dir() {
 }
 function python_package_installed() {
     # Crude way of checking if a Python package is installed
+    # Returns package version if found, empty string otherwise
     # 1: python executable
     # 2: package name
-    local import_package=$($1 -c "import $2" 2>&1 | grep "ImportError: No module named $2")
+    local yolk=$(which yolk 2>/dev/null)
+    if [ ! -z "$yolk" ] ; then
+	local package_version=$($yolk -l -f version $2 2>&1| grep Version: | cut -d":" -f2 | tr -d " ")
+	if [ -z "$package_version" ] ; then
+	    local import_package="No module named $2"
+	fi
+    else
+	local package_version=$($1 -c "import $2; print $2.__version__" 2>&1)
+	local import_package=$(echo $package_version | grep "ImportError: No module named $2")
+    fi
     if [ -z "$import_package" ] ; then
-	echo $2
+	echo $package_version
     else
 	echo ''
     fi
@@ -60,10 +70,12 @@ function R_version() {
 }
 function R_package_installed() {
     # Crude way of checking if an R package is installed
+    # Returns package version if found, empty string otherwise
     # 1: R executable
     # 2: package name
-    if [ ! -z "$(echo 'installed.packages()' | $1 --vanilla | grep ^$2)" ] ; then
-	echo $2
+    local package_info=$(echo 'installed.packages()[,c("Package","Version")]' | $1 --vanilla | grep ^$2)
+    if [ ! -z "$package_info" ] ; then
+	echo $package_info | cut -d'"' -f4
     else
 	echo ''
     fi
