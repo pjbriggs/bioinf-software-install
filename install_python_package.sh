@@ -32,7 +32,7 @@ echo Installing under $INSTALL_DIR
 echo -n Checking if $PACKAGE_NAME is already installed...
 prepend_path PYTHONPATH $(python_lib_dir $PYTHON $INSTALL_DIR)
 if [ ! -z "$(python_package_installed $PYTHON $PACKAGE_NAME)" ] ; then
-    echo yes
+    echo found version $(python_package_installed $PYTHON $PACKAGE_NAME)
     if [ -z "$force_install" ] ; then
 	echo $PACKAGE_NAME already installed, use --force to override
 	exit
