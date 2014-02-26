@@ -161,7 +161,7 @@ function unpack_archive() {
 	shift
     fi
     if [ ! -f "$1" ] ; then
-	echo ERROR no archive file '$1' >&2
+	echo ERROR no archive file $1 >&2
 	exit 1
     fi
     echo -n Determining archive type...
