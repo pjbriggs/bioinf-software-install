@@ -8,7 +8,7 @@ TARGZ=$1
 INSTALL_DIR=$2
 if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
   echo Usage: $(basename $0) TARGZ INSTALL_DIR
-  echo Installs samtools to INSTALL_DIR/samtools/VERSION
+  echo Installs samtools and bcftools to INSTALL_DIR/samtools/VERSION
   exit 1
 fi
 SAMTOOLS_DIR=$(package_dir $TARGZ)
@@ -25,9 +25,24 @@ echo -n Building in $SAMTOOLS_DIR...
 cd $SAMTOOLS_DIR
 make >> build.log 2>&1
 echo done
+echo -n Looking for bcftools subdirectory...
+if [ ! -d bcftools ] ; then
+  echo missing
+  echo ERROR no bcftools subdirectory found >&2
+  exit 1
+fi
+echo ok
+echo -n Building in bcftools...
+cd bcftools
+make >> ../build.log 2>&1
+echo done
+cd ..
 echo -n Copying samtools executable to $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
 cp samtools $INSTALL_DIR
+echo done
+echo -n Copying bcftools executable to $INSTALL_DIR...
+cp bcftools/bcftools $INSTALL_DIR
 echo done
 cd ..
 clean_up $TARGZ
