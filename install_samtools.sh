@@ -21,8 +21,12 @@ if [ ! -d $SAMTOOLS_DIR ] ; then
   echo ERROR no directory $SAMTOOLS_DIR found >&2
   exit 1
 fi
-echo -n Building in $SAMTOOLS_DIR...
+echo Moving to $SAMTOOLS_DIR
 cd $SAMTOOLS_DIR
+echo -n Resetting CFLAGS in Makefile to add -fPIC...
+sed -i 's/^CFLAGS=		.*/CFLAGS=		-g -Wall -O2 -fPIC #-m64 #-arch ppc/g' Makefile
+echo done
+echo -n Building in $SAMTOOLS_DIR...
 make >> build.log 2>&1
 echo done
 echo -n Looking for bcftools subdirectory...
@@ -37,13 +41,25 @@ cd bcftools
 make >> ../build.log 2>&1
 echo done
 cd ..
-echo -n Copying samtools executable to $INSTALL_DIR...
+echo -n Creating $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
-cp samtools $INSTALL_DIR
 echo done
-echo -n Copying bcftools executable to $INSTALL_DIR...
-cp bcftools/bcftools $INSTALL_DIR
-echo done
+for f in $(echo samtools bcftools/bcftools) ; do
+  echo -n Copying $f executable to $INSTALL_DIR...
+  cp $f $INSTALL_DIR
+  echo done
+done
+echo Installing headers and libraries
+for f in $(echo *.h) ; do
+  echo -n Copying $f header file to $INSTALL_DIR...
+  cp $f $INSTALL_DIR
+  echo done
+done
+for f in $(echo *.a) ; do
+  echo -n Copying $f library to $INSTALL_DIR...
+  cp $f $INSTALL_DIR
+  echo done
+done
 cd ..
 clean_up $TARGZ
 ##
