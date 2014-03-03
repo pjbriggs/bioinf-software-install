@@ -257,7 +257,8 @@ function install_python_package() {
     local install_cmd="$1 setup.py install --prefix=$3"
     $install_cmd > install.log 2>&1
     if [ "$?" -eq 0 ] ; then
-	echo done: version $(python_package_installed $PYTHON $PACKAGE_NAME)
+	local package=$(package_name $2)
+	echo done: version $(python_package_installed $1 $package)
     else
 	echo FAILED
 	exit 1
