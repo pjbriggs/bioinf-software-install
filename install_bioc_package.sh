@@ -56,7 +56,7 @@ EOF
 echo done
 echo -n Checking $PACKAGE_NAME was installed...
 if [ ! -z "$(R_package_installed $R_EXE $PACKAGE_NAME)" ] ; then
-    echo ok
+    echo ok: version $(R_package_installed $R_EXE $PACKAGE_NAME)
 else
     echo FAILED
     exit 1
