@@ -25,7 +25,7 @@ function to_lower() {
     echo $(echo $1 | tr [:upper:] [:lower:])
 }
 function python_version() {
-    # Fetch Python version
+    # Fetch Python version (major.minor)
     # 1: python executable (incl path if necessary)
     echo $($1 --version 2>&1 | cut -d" " -f2 | cut -d. -f1-2)
 }
@@ -65,7 +65,7 @@ function python_package_installed() {
     fi
 }
 function R_version() {
-    # Fetch R version
+    # Fetch R version (major.minor)
     echo $($1 --version 2>&1 | grep "^R version" | cut -d" " -f3 | cut -d. -f1-2)
 }
 function R_package_installed() {
@@ -79,6 +79,10 @@ function R_package_installed() {
     else
 	echo ''
     fi
+}
+function perl_version() {
+    # Fetch perl version (major.minor)
+    echo $($1 -v 2>&1 | grep "^This is perl" | cut -d"(" -f2 | cut -d")" -f1 | tr -d "v" | cut -d. -f1-2)
 }
 function prepend_path() {
     # Prepend path to path-type variable

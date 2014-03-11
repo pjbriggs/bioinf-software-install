@@ -69,6 +69,21 @@ Use
 
 to build and install to `${OPT}/perl/5.18.1`
 
+To install packages under a non-root location (e.g. `SITE_PERL`) directly from
+CPAN, use:
+
+   install_perl_package.sh ${OPT}/perl/5.18.1 DBI ${SITE_PERL}
+
+The script uses `cpanm` (from the `App::cpanminus` module) to perform the
+installation; it also attempts to version the libraries against different Perl
+versions so to make the packages available:
+
+    export PERL5LIB=${SITE_PERL}/${PERLVERSION}/lib/perl5:$PERL5LIB
+
+where `PERLVERSION` is the `MAJOR.MINOR` version number (for example for
+R 5.18.1, `PERLVERSION=5.18`).
+
+
 R and Bioconductor
 ------------------
 
