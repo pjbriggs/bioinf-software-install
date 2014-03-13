@@ -84,6 +84,49 @@ function perl_version() {
     # Fetch perl version (major.minor)
     echo $($1 -v 2>&1 | grep "^This is perl" | cut -d"(" -f2 | cut -d")" -f1 | tr -d "v" | cut -d. -f1-2)
 }
+function install_cpanminus() {
+    # Install cpnaminus into Perl distribution
+    # 1: Perl executable (full path)
+    echo -n Install cpanminus...
+    local cpan=$(dirname $1)/cpan
+    if [ ! -x "$cpan" ] ; then
+	echo FAILED
+	echo No executable $cpan found >&2
+	exit 1
+    fi
+    $cpan App::cpanminus > install.cpanm.log 2>&1
+    if [ $? -ne 0 ] ; then
+	echo FAILED
+	echo See log file install.cpanm.log for more information
+	echo Unable to install cpanm into Perl distribution >&2
+	exit 1
+    else
+	echo ok
+	clean_up_file install.cpanm.log
+    fi
+}
+function install_perl_package() {
+    # Install Perl package using cpanm
+    # 1: perl executable (full path)
+    # 2: package to install
+    # 3: installation directory
+    echo -n Installing $PACKAGE using cpanm...
+    local cpanm=$(dirname $1)/cpanm
+    if [ ! -x "$cpanm" ] ; then
+	echo FAILED
+	echo No executable $cpanm >&2
+	exit 1
+    fi
+    $cpanm -l $3 $2 > install.$2.perl$(perl_version $1).log 2>&1
+    if [ $? -ne 0 ] ; then
+	echo FAILED
+	echo See log file install.$2.perl$(perl_version $1).log for more information
+	echo Unable to install $2 into $3 >&2
+	exit 1
+    else
+	echo done
+    fi
+}
 function prepend_path() {
     # Prepend path to path-type variable
     # 1: path variable name e.g. PATH

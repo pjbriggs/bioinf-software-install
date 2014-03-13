@@ -40,25 +40,13 @@ echo -n Prepending $INSTALL_DIR/lib/perl5 to PERL5LIB...
 prepend_path PERL5LIB $INSTALL_DIR/lib/perl5
 echo done
 echo -n Checking for cpanm...
-if [ ! -z "$(which cpanm 2>&1 | grep 'no cpanm in')" ] ; then
+CPANM=$(dirname $PERL_EXE)/cpanm
+if [ ! -x "$CPANM" ] ; then
   echo missing
-  echo Installing cpanm
-  cpan App::cpanminus > cpanminus.install.log 2>&1
-  if [ $? -ne 0 ] ; then
-    echo FAILED
-    echo Unable to install cpanm into Perl distribution >&2
-    exit 1
-  else
-    echo ok
-  fi
-fi
-echo Installing $PACKAGE using cpanm
-cpanm -l $INSTALL_DIR $PACKAGE
-if [ $? -ne 0 ] ; then
-   echo FAILED
-   exit 1
+  install_cpanminus $PERL_EXE
 else
-   echo Finished
+  echo ok
 fi
+install_perl_package $PERL_EXE $PACKAGE $INSTALL_DIR
 ##
 #
