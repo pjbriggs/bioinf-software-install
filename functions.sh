@@ -133,17 +133,19 @@ function wget_url() {
     return 0
 }
 function package_dir() {
-    # Get directory for package in targz archive
-    # 1: tar.gz file
-    local targz=$(basename "$1")
+    # Get directory for package in targz/zip archive
+    # 1: archive file
+    local archive=$(basename "$1")
     if [ ! -z "$(echo $1 | grep tar.gz)" ] ; then
-	local tgz=tar.gz
+	local ext=tar.gz
     elif [ ! -z "$(echo $1 | grep tgz)" ] ; then
-	local tgz=tgz
+	local ext=tgz
     elif [ ! -z "$(echo $1 | grep tar.bz2)" ] ; then
-	local tgz=tar.bz2
+	local ext=tar.bz2
+    elif [ ! -z "$(echo $1 | grep zip)" ] ; then
+	local ext=zip
     fi
-    echo ${targz%.$tgz}
+    echo ${archive%.$ext}
 }
 function package_name() {
     # Get name for package in targz archive
@@ -203,11 +205,38 @@ function unpack_archive() {
 function clean_up() {
     # Remove directory created when unpacking archive
     # 1: archive file
-    echo -n Cleaning up...
+    echo -n Cleaning up $(package_dir $1)...
     if [ -d "$(package_dir $1)" ] ; then
 	rm -rf $(package_dir $1)
+	echo done
+    else
+	echo FAILED
+        echo No directory $(package_dir $1) to remove
     fi
-    echo done
+}
+function clean_up_file() {
+    # Remove file
+    # 1: file
+    echo -n Cleaning up $1...
+    if [ -f "$1" ] ; then
+	rm -f $1
+	echo done
+    else
+	echo FAILED
+        echo No file $1 to remove
+    fi
+}
+function clean_up_dir() {
+    # Remove directory and contents
+    # 1: dir
+    echo -n Cleaning up $1...
+    if [ -d "$1" ] ; then
+	rm -rf $1
+	echo done
+    else
+	echo FAILED
+        echo No directory $1 to remove
+    fi
 }
 function pip_install() {
     # Install Python package using pip
