@@ -245,6 +245,22 @@ function unpack_archive() {
 	exit 1
     fi
 }
+function copy_contents() {
+    # Copy contents of directory to another directory
+    # 1: source directory
+    # 2: target directory
+    echo -n Copying contents of $1 to $2...
+    if [ ! -d "$1" ] ; then
+	echo FAILED
+	echo No directory $1 >&2
+    elif [ ! -d "$2" ] ; then
+	echo FAILED
+	echo No directory $2 >&2
+    else
+	cp -r $1/* $2
+	echo done
+    fi	
+}
 function clean_up() {
     # Remove directory created when unpacking archive
     # 1: archive file
