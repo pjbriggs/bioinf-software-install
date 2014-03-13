@@ -47,7 +47,7 @@ else
     echo no
 fi
 echo -n Running biocLite.R in R...
-$R_EXE --vanilla &> $PACKAGE_NAME.$R_VER.install.log <<EOF
+$R_EXE --vanilla &> install.$PACKAGE_NAME.R$R_VER.log <<EOF
 source("http://bioconductor.org/biocLite.R")
 biocLite()
 biocLite("$PACKAGE",lib="$INSTALL_DIR")
@@ -57,6 +57,7 @@ echo done
 echo -n Checking $PACKAGE_NAME was installed...
 if [ ! -z "$(R_package_installed $R_EXE $PACKAGE_NAME)" ] ; then
     echo ok: version $(R_package_installed $R_EXE $PACKAGE_NAME)
+    clean_up_file install.$PACKAGE_NAME.R$R_VER.log
 else
     echo FAILED
     exit 1

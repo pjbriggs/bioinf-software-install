@@ -59,7 +59,7 @@ else
     echo no
 fi
 echo -n Running install.packages in R...
-$R_EXE --vanilla &> $PACKAGE_NAME.$R_VER.install.log <<EOF
+$R_EXE --vanilla &> install.$PACKAGE_NAME.R$R_VER.log <<EOF
 install.packages("$PACKAGE",lib="$INSTALL_DIR",repos=$R_REPO$EXTRA_ARGS)
 q()
 EOF
@@ -67,8 +67,10 @@ echo done
 echo -n Checking $PACKAGE_NAME was installed...
 if [ ! -z "$(R_package_installed $R_EXE $PACKAGE_NAME)" ] ; then
     echo ok: version $(R_package_installed $R_EXE $PACKAGE_NAME)
+    clean_up_file install.$PACKAGE_NAME.R$R_VER.log
 else
     echo FAILED
+    echo See log file install.$PACKAGE_NAME.R$R_VER.log for more information
     exit 1
 fi
 ##
