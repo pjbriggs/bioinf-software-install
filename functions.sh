@@ -259,7 +259,23 @@ function copy_contents() {
     else
 	cp -r $1/* $2
 	echo done
-    fi	
+    fi
+}
+function copy_file() {
+    # Copy file to another location
+    # 1: file to copy
+    # 2: target directory
+    echo -n Copying $(basename $1) from $(dirname $1) to $2...
+    if [ ! -f "$1" ] ; then
+	echo FAILED
+	echo No file $1 >&2
+    elif [ ! -d "$2" ] ; then
+	echo FAILED
+	echo No directory $2 >&2
+    else
+	cp $1 $2
+	echo done
+    fi
 }
 function clean_up() {
     # Remove directory created when unpacking archive
