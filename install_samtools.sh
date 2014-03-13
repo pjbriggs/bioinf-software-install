@@ -44,21 +44,16 @@ cd ..
 echo -n Creating $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
 echo done
+echo Installing executables
 for f in $(echo samtools bcftools/bcftools) ; do
-  echo -n Copying $f executable to $INSTALL_DIR...
-  cp $f $INSTALL_DIR
-  echo done
+  copy_file $f $INSTALL_DIR
 done
 echo Installing headers and libraries
 for f in $(echo *.h) ; do
-  echo -n Copying $f header file to $INSTALL_DIR...
-  cp $f $INSTALL_DIR
-  echo done
+  copy_file $f $INSTALL_DIR
 done
 for f in $(echo *.a) ; do
-  echo -n Copying $f library to $INSTALL_DIR...
-  cp $f $INSTALL_DIR
-  echo done
+  copy_file $f $INSTALL_DIR
 done
 cd ..
 clean_up $TARGZ
