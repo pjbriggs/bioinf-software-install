@@ -31,14 +31,8 @@ INSTALL_DIR=$(full_path $INSTALL_DIR)/$BOWTIE/$BOWTIE_VERSION
 echo -n Creating $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
 echo done
-echo -n Copying contents of $BOWTIE_DIR to $INSTALL_DIR...
-cp -r $BOWTIE_DIR/* $INSTALL_DIR
-echo done
-if [ -d "$BOWTIE_DIR" ] ; then
-    echo -n Removing directory $BOWTIE_DIR...
-    rm -rf $BOWTIE_DIR
-    echo done
-fi
+copy_contents $BOWTIE_DIR $INSTALL_DIR
+clean_up_dir $BOWTIE_DIR
 echo "#%Module1.0"
 echo "## $BOWTIE $BOWTIE_VERSION modulefile"
 echo "prepend-path PATH            $INSTALL_DIR"
