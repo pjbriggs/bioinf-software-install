@@ -14,20 +14,21 @@ fi
 MOTHUR_DIR=Mothur.source
 MOTHUR_VER=$(echo ${ZIP%.zip} | cut -d. -f2-)
 INSTALL_DIR=$(full_path $INSTALL_DIR)/mothur/$MOTHUR_VER
-echo Build mothur from $TARGZ
-echo Version $SAMTOOLS_VER
+echo Build mothur from $ZIP
+echo Version $MOTHUR_VER
 unpack_archive --no-package-dir-check $ZIP
 if [ ! -d $MOTHUR_DIR ] ; then
   echo ERROR no directory $MOTHUR_DIR found >&2
   exit 1
 fi
-echo -n Moving into $MOTHUR_DIR to $MOTHUR_DIR.$MOTHUR_VER
+echo -n Moving $MOTHUR_DIR to $MOTHUR_DIR.$MOTHUR_VER...
 mv -f $MOTHUR_DIR $MOTHUR_DIR.$MOTHUR_VER
 MOTHUR_DIR=$MOTHUR_DIR.$MOTHUR_VER
 echo done
 clean_up_dir __MACOSX
-echo Moving to $MOTHUR_DIR...
+echo -n Moving to $MOTHUR_DIR...
 cd $MOTHUR_DIR
+echo done
 echo -n Updating makefile...
 sed -i 's/^USECOMPRESSION ?= no/USECOMPRESSION ?= yes/' makefile
 sed -i 's/TARGET_ARCH += -arch x86_64/#TARGET_ARCH += -arch x86_64/' makefile
