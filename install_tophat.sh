@@ -21,21 +21,12 @@ fi
 wget_url $TGZ_URL
 unpack_archive $TGZ_FILE
 TOPHAT_DIR=$(package_dir $TGZ_FILE)
-if [ ! -d $TOPHAT_DIR ] ; then
-  echo ERROR no directory $TOPHAT_DIR >&2
-fi
 INSTALL_DIR=$(full_path $INSTALL_DIR)/tophat/$TOPHAT_VERSION
 echo -n Creating $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
 echo done
-echo -n Copying contents of $TOPHAT_DIR to $INSTALL_DIR...
-cp -r $TOPHAT_DIR/* $INSTALL_DIR
-echo done
-if [ -d "$TOPHAT_DIR" ] ; then
-    echo -n Removing directory $TOPHAT_DIR...
-    rm -rf $TOPHAT_DIR
-    echo done
-fi
+copy_contents $TOPHAT_DIR $INSTALL_DIR
+clean_up $TGZ_FILE
 echo "#%Module1.0"
 echo "## tophat $TOPHAT_VERSION modulefile"
 echo "prepend-path PATH            $INSTALL_DIR"
