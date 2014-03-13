@@ -17,7 +17,7 @@ PERL_EXE=$1
 PACKAGE=$2
 INSTALL_DIR=$3
 if [ -z "$PERL_EXE" ] || [ -z "$PACKAGE" ] || [ -z "$INSTALL_DIR" ] ; then
-  echo Usage: $(basename $0) \[--force\] PERL_EXE PACKAGE INSTALL_DIR
+  echo Usage: $(basename $0) PERL_EXE PACKAGE INSTALL_DIR
   exit 1
 fi
 PERL_EXE=$(full_path $PERL_EXE)
