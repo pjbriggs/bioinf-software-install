@@ -4,10 +4,14 @@
 #
 . $(dirname $0)/functions.sh
 #
+if [ "$1" == "--force" ] ; then
+    force_install=yes
+    shift
+fi
 BLAST_VERSION=$1
 INSTALL_DIR=$2
 if [ -z "$BLAST_VERSION" ] || [ -z "$INSTALL_DIR" ] ; then
-  echo Usage: $(basename $0) BLAST_VERSION INSTALL_DIR
+  echo Usage: $(basename $0) \[--force\] BLAST_VERSION INSTALL_DIR
   echo Downloads and installs NCBI Blast+ binaries to INSTALL_DIR/ncbi-blast/VERSION
   exit 1
 fi
@@ -19,16 +23,24 @@ MD5_FILE=ncbi-blast-${BLAST_VERSION}+-x64-linux.tar.gz.md5
 TARGZ_URL=${BASE_URL}/$TARGZ_FILE
 MD5_URL=${BASE_URL}/$MD5_FILE
 if [ -f $TARGZ_FILE ] ; then
-  echo ERROR $TARGZ_FILE already exists >&2
-  exit 1
+  if [ -z "$force_install" ] ; then
+    echo ERROR $TARGZ_FILE already exists >&2
+    exit 1
+  else
+    echo WARNING $TARGZ_FILE already exists
+  fi
 fi
 wget_url $TARGZ_URL
 wget_url $MD5_URL
 echo -n Checking MD5 checksum...
 md5sum -c $MD5_FILE
 if [ $? -ne 0 ] ; then
-  echo ERROR MD5 check failed >&2
-  exit 1
+  if [ -z "$force_install" ] ; then
+    echo ERROR MD5 check failed >&2
+    exit 1
+  else
+    echo WARNING MD5 check failed, proceeding anyway
+  fi
 fi
 unpack_archive --no-package-dir-check $TARGZ_FILE
 BLAST_DIR=ncbi-blast-${BLAST_VERSION}+
