@@ -7,7 +7,7 @@
 TOPHAT_VERSION=$1
 INSTALL_DIR=$2
 if [ -z "$TOPHAT_VERSION" ] || [ -z "$INSTALL_DIR" ] ; then
-  echo Usage: $(basename $0) TOPHAT_VERSION_TARGZ INSTALL_DIR
+  echo Usage: $(basename $0) TOPHAT_VERSION INSTALL_DIR
   echo Downloads and installs tophat binaries to INSTALL_DIR/tophat/VERSION
   exit 1
 fi
