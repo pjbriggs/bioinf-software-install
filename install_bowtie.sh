@@ -7,7 +7,7 @@
 BOWTIE_VERSION=$1
 INSTALL_DIR=$2
 if [ -z "$BOWTIE_VERSION" ] || [ -z "$INSTALL_DIR" ] ; then
-  echo Usage: $(basename $0) BOWTIE_VERSION_TARGZ INSTALL_DIR
+  echo Usage: $(basename $0) BOWTIE_VERSION INSTALL_DIR
   echo Downloads and installs bowtie binaries to INSTALL_DIR/bowtie\[2\]/VERSION
   exit 1
 fi
