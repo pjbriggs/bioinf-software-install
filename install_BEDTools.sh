@@ -19,9 +19,15 @@ echo Build bedtools from $TARGZ
 echo Version $BEDTOOLS_VER
 unpack_archive --no-package-dir-check $TARGZ
 if [ ! -d $BEDTOOLS_DIR ] ; then
-  echo ERROR no directory $BEDTOOLS_DIR found >&2
-  exit 1
+  echo WARNING no directory $BEDTOOLS_DIR found
+  BEDTOOLS_DIR=bedtools2-${BEDTOOLS_VER}
+  echo Trying $BEDTOOLS_DIR instead
+  if [ ! -d $BEDTOOLS_DIR ] ; then
+      echo ERROR no source code directory found >&2
+      exit 1
+  fi
 fi
+
 echo Moving to $BEDTOOLS_DIR
 cd $BEDTOOLS_DIR
 echo -n Running 'make'...
@@ -39,6 +45,6 @@ mkdir -p $INSTALL_DIR
 cp bin/* $INSTALL_DIR
 echo done
 cd ..
-clean_up $TARGZ
+clean_up_dir $BEDTOOLS_DIR
 ##
 #
