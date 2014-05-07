@@ -7,7 +7,7 @@
 PICARD_VERSION=$1
 INSTALL_DIR=$2
 if [ -z "$PICARD_VERSION" ] || [ -z "$INSTALL_DIR" ] ; then
-  echo Usage: $(basename $0) PICARD_VERSION_TARGZ INSTALL_DIR
+  echo Usage: $(basename $0) PICARD_VERSION INSTALL_DIR
   echo Downloads and installs picard-tools binaries to INSTALL_DIR/picard-tools/VERSION
   exit 1
 fi
