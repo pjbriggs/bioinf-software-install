@@ -2,7 +2,7 @@
 #
 # Fetch and install bowtie binaries
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 BOWTIE_VERSION=$1
 INSTALL_DIR=$2

@@ -2,14 +2,14 @@
 #
 # Install fastx_toolkit and gtextutils
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 FASTX_TOOLKIT_TARGZ=$1
 LIBGTEXTUTILS_TARGZ=$2
 INSTALL_DIR=$3
 if [ -z "$FASTX_TOOLKIT_TARGZ" ] || [ -z "$LIBGTEXTUTILS_TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
   echo Usage: $(basename $0) FASTX_TOOLKIT_TARGZ LIBGTEXTUTILS_TARGZ INSTALL_DIR
-  echo Installs fastx_toolkit and gtextutils to INSTALL_DIR/fastx_toolkit/VERSION
+  echo Builds fastx_toolkit and gtextutils from source and installs to INSTALL_DIR/fastx_toolkit/VERSION
   exit 1
 fi
 FASTX_TOOLKIT_DIR=$(package_dir $FASTX_TOOLKIT_TARGZ)

@@ -6,7 +6,7 @@
 # using an arbitrary R version, using either a local tar.gz file
 # or via CRAN
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 # Main script
 if [ "$1" == "--force" ] ; then

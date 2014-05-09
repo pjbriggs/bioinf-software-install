@@ -2,7 +2,7 @@
 #
 # Fetch and install Picard binaries
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 PICARD_VERSION=$1
 INSTALL_DIR=$2

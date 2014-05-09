@@ -2,7 +2,7 @@
 #
 # Install Python application
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 PYTHON=$1
 TARGZ=$2

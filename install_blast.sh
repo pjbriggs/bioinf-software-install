@@ -2,7 +2,7 @@
 #
 # Fetch and install NCBI blast+ binaries
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 if [ "$1" == "--force" ] ; then
     force_install=yes
@@ -32,15 +32,24 @@ if [ -f $TARGZ_FILE ] ; then
 fi
 wget_url $TARGZ_URL
 wget_url $MD5_URL
-echo -n Checking MD5 checksum...
-md5sum -c $MD5_FILE
-if [ $? -ne 0 ] ; then
+if [ ! -f $MD5_FILE ] ; then
   if [ -z "$force_install" ] ; then
-    echo ERROR MD5 check failed >&2
+    echo ERROR failed to download MD5 file, use '--force' to override >&2
     exit 1
   else
-    echo WARNING MD5 check failed, proceeding anyway
+    echo WARNING no MD5 file, proceeding anyway
   fi
+else
+    echo -n Checking MD5 checksum...
+    md5sum -c $MD5_FILE
+    if [ $? -ne 0 ] ; then
+	if [ -z "$force_install" ] ; then
+	    echo ERROR MD5 check failed, use '--force' to override >&2
+	    exit 1
+	else
+	    echo WARNING MD5 check failed, proceeding anyway
+	fi
+    fi
 fi
 unpack_archive --no-package-dir-check $TARGZ_FILE
 BLAST_DIR=ncbi-blast-${BLAST_VERSION}+

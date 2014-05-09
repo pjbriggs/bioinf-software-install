@@ -2,7 +2,7 @@
 #
 # Install Freebayes
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 GIT_COMMIT_ID=$1
 INSTALL_DIR=$(full_path $2)

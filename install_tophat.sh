@@ -2,7 +2,7 @@
 #
 # Fetch and install tophat binaries
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 TOPHAT_VERSION=$1
 INSTALL_DIR=$2

@@ -2,7 +2,7 @@
 #
 # Build python
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 TARGZ=$1
 INSTALL_DIR=$2

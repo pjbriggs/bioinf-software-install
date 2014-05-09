@@ -2,7 +2,7 @@
 #
 # Fetch and install cufflinks binaries
 #
-. $(dirname $0)/functions.sh
+. $(dirname $0)/import_functions.sh
 #
 CUFFLINKS_VERSION=$1
 INSTALL_DIR=$2
