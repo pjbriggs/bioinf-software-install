@@ -154,12 +154,15 @@ packages:
 
  * BEDTools
  * freebayes
+ * mothur
  * samtools
  * ucsc_tools
 
-Deps Directory
---------------
+and to download and install binary distributions for:
 
-The `deps` directory contains various `.deps` files which are intended to
-list the dependencies for particular packages. For the time being they are
-only used for reference (another work in progress).
+ * NCBI Blast+
+ * Bowtie/Bowtie2
+ * Cufflinks
+ * Fastx toolkit
+ * Picard tools
+ * Tophat
