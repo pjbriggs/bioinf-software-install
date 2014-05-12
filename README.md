@@ -7,11 +7,14 @@ Various scripts to help with building and deploying multiple versions of
 software used for bioinformatics, including Python, Perl and R, and
 standalone applications such as bowtie.
 
+**This is a work in progress.**
+
 The intention is to provide support for "managed installations" of
 different versions of these software which are completely independent of
-those provided via the system's package manager (e.g. yum).
-
-This is a work in progress.
+those provided via the system's package manager (e.g. yum). By
+standardising and automating common installation tasks, both the burden
+on administrators and the length of time users have to wait for
+packages to are reduced.
 
 Overview
 --------
@@ -39,7 +42,18 @@ within which there is also a level of versioning, e.g.
 
 (The library versioning is based on `MAJOR.MINOR` version numbers, with
 the assumption that library packages should be compatible across patch
-versions within a given set of `MAJOR.MINOR` versions.
+versions within a given set of `MAJOR.MINOR` versions.)
+
+The installation scheme is intended to be coupled with the use of
+[Environment Modules](http://modules.sourceforge.net/) for managing the
+user environment. For the `R` example above the accompanying module file
+might look like:
+
+    #Module1.0
+    ## R 3.0.2
+    ##
+    prepend-path PATH   /opt/apps/R/3.0.2/bin
+    prepend-path R_LIBS /opt/libs/site-R/3.0
 
 Python
 ------
