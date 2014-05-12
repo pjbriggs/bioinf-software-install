@@ -1,39 +1,45 @@
-Scripts to help with building and deploying bioinformatics software
-===================================================================
+bioinf-software-install
+=======================
 
-Various random scripts to help with building and deploying software used
-for bioinformatics (python, perl, R).
+**Scripts to help with building and deploying bioinformatics software**
+
+Various scripts to help with building and deploying multiple versions of
+software used for bioinformatics, including Python, Perl and R, and
+standalone applications such as bowtie.
 
 The intention is to provide support for "managed installations" of
-different versions of Python, Perl and R which are completely
-independent of those provided via the system's package manager (e.g.
-yum).
+different versions of these software which are completely independent of
+those provided via the system's package manager (e.g. yum).
+
+This is a work in progress.
 
 Overview
 --------
 
-Where possible we prefer to install multiple versions of "major" packages
-using the scheme:
+The general installation scheme is to have a top-level installation
+directory (referred to here by the placeholder variable `OPT`) below
+which packages are installed using the directory structure:
 
     ${OPT}/<PACKAGE>/<VERSION>
 
-e.g.
+e.g. if `OPT` is `/opt/apps/` then `R` 3.0.2 would be installed into
 
-    ${OPT}/R/3.0.2
-
-where `OPT` is a stand-in for the top level installation location.
+    /opt/apps/R/3.0.2
 
 For specific Python, perl or R libraries we prefer to install to
 site-specific locations, e.g.
 
     ${OPT_LIBS}/site-python
     ${OPT_LIBS}/site-perl
-    ${OPT_LIBS}/R
+    ${OPT_LIBS}/site-R
 
 within which there is also a level of versioning, e.g.
 
-    ${SITE_R}/3.0
+    /opt/libs/site-R/3.0/...
 
+(The library versioning is based on `MAJOR.MINOR` version numbers, with
+the assumption that library packages should be compatible across patch
+versions within a given set of `MAJOR.MINOR` versions.
 
 Python
 ------
@@ -118,8 +124,6 @@ To install Bioconductor packages use:
     install_bioc_package.sh ${OPT}/R/3.0.2/bin/R SRAdb ${SITE_R}
 
 ### Comments ###
-
-This is a work in progress.
 
 To check if a package is available do:
 
