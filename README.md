@@ -168,11 +168,12 @@ Other packages
 --------------
 
 Standalone scripts also exist to build the following bioinformatics
-packages:
+packages from source:
 
  * BEDTools
  * freebayes
  * mothur
+ * RSEM
  * samtools
  * ucsc_tools
 
