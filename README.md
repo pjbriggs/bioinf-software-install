@@ -172,6 +172,7 @@ packages from source:
 
  * BEDTools
  * freebayes
+ * MEME suite
  * mothur
  * RSEM
  * samtools
