@@ -61,7 +61,6 @@ if [ $? -ne 0 ] ; then
 else
   echo done
 fi
-exit
 cd ..
 clean_up_dir $MEME_DIR
 ##
