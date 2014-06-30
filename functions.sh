@@ -204,6 +204,80 @@ function unpack_archive() {
 	exit 1
     fi
 }
+function create_directory() {
+    # Create a directory with mkdir -p
+    # 1: target directory to create
+    echo -n Creating $1...
+    mkdir -p $1
+    if [ $? -ne 0 ] ; then
+	FAILED
+	exit 1
+    else
+	echo done
+    fi
+}
+function check_directory() {
+    # Check if directory exists
+    # 1: target directory to check
+    echo -n Checking for directory $1...
+    if [ ! -d "$1" ] ; then
+	echo FAILED
+	echo ERROR $1 not found >&2
+	exit 1
+    else
+	echo ok
+    fi
+}   
+function do_configure() {
+    # Run 'configure' using supplied arguments
+    # Optionally: first pair of arguments can be "--log FILE"
+    # then stdout and stderr are appended to FILE
+    # Remaining args are passed to configure
+    local log="&1"
+    if [ "$1" == "--log" ] ; then
+	shift
+	log=$1
+	shift
+    fi
+    local configure_cmd="./configure $@"
+    echo Configure command: $configure_cmd >>$log
+    echo -n Running configure...
+    if [ ! -f "./configure" ] ; then
+	echo FAILED
+	echo No configure script in $(pwd) >&2
+	exit 1
+    fi
+    $configure_cmd >>$log 2>&1
+    if [ $? -ne 0 ] ; then
+	echo FAILED
+	echo ERROR configure returned non-zero exit code >&2
+	exit 1
+    else
+	echo ok
+    fi
+}
+function do_make() {
+    # Run 'make' using supplied arguments
+    # Optionally: first pair of arguments can be "--log FILE"
+    # then stdout and stderr are appended to FILE
+    # Remaining args are passed to make
+    local log="&1"
+    if [ "$1" == "--log" ] ; then
+	shift
+	log=$1
+	shift
+    fi
+    echo Make command: make $@ >>$log
+    echo -n Running make...
+    make $@ >>$log 2>&1
+    if [ $? -ne 0 ] ; then
+	echo FAILED
+	echo ERROR make returned non-zero exit code >&2
+	exit 1
+    else
+	echo ok
+    fi
+}
 function copy_contents() {
     # Copy contents of directory to another directory
     # 1: source directory
@@ -219,6 +293,17 @@ function copy_contents() {
 	cp -r $1/* $2
 	echo done
     fi
+}
+function copy_files() {
+    # Copy one or more files to another location
+    # 1(,2,...,n-1): file(s) to copy
+    # Last argument: target directory
+    for last; do true; done
+    local dir=$last
+    while [ $# -gt 1 ] ; do
+	copy_file $1 $dir
+	shift
+    done
 }
 function copy_file() {
     # Copy file to another location
