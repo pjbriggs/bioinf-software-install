@@ -30,37 +30,24 @@ if [ ! -z "$MEME_PATCH" ] ; then
 else
   echo " (unpatched)"
 fi
+# Set up build log
+LOG_FILE=$(pwd)/install.meme.$MEME_VER.log
+clean_up_file $LOG_FILE
+# Unpack source code
 unpack_archive --no-package-dir-check $TARGZ
-if [ ! -d $MEME_DIR ] ; then
-  echo ERROR no directory $MEME_DIR found >&2
-  exit 1
-fi
+check_directory $MEME_DIR
+# Do build and install
 echo Moving to $MEME_DIR
 cd $MEME_DIR
-echo -n Running configure...
-./configure --enable-build-libxslt --enable-build-libxml2 --disable-web --prefix=$INSTALL_DIR >> build.log 2>&1
-echo done
-echo -n Running make...
-make >> build.log 2>&1
-if [ $? -ne 0 ] ; then
-  echo FAILED
-  echo ERROR make returned non-zero exit code >&2
-  exit 1
-else
-  echo done
-fi
-echo -n Creating $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-echo done
-echo -n Running make install...
-make install >> build.log 2>&1
-if [ $? -ne 0 ] ; then
-  echo FAILED
-  echo ERROR make install returned non-zero exit code >&2
-  exit 1
-else
-  echo done
-fi
+do_configure --log $LOG_FILE \
+    --enable-build-libxslt \
+    --enable-build-libxml2 \
+    --disable-web \
+    --prefix=$INSTALL_DIR
+do_make --log $LOG_FILE
+create_directory $INSTALL_DIR
+do_make --log $LOG_FILE install
+# Finish up
 cd ..
 clean_up_dir $MEME_DIR
 ##
