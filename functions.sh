@@ -341,8 +341,7 @@ function clean_up_file() {
 	rm -f $1
 	echo done
     else
-	echo FAILED
-        echo No file $1 to remove
+	echo not found
     fi
 }
 function clean_up_dir() {
@@ -353,8 +352,7 @@ function clean_up_dir() {
 	rm -rf $1
 	echo done
     else
-	echo FAILED
-        echo No directory $1 to remove
+	echo not found
     fi
 }
 function pip_install() {
