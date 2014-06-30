@@ -13,6 +13,7 @@
 # Defaults
 BOOST_INCL=/usr/include/boost
 SPARSEHASH_INCL=/usr/include/google/sparsehash
+MPI_DIR=
 MAX_KMER=128
 #
 # Command line
@@ -25,6 +26,10 @@ while [ $# -gt 2 ] ; do
 	--with-sparsehash)
 	    shift
 	    SPARSEHASH_INCL=$1
+	    ;;
+	--with-mpi)
+	    shift
+	    MPI_DIR=$1
 	    ;;
 	--max-kmer)
 	    shift
@@ -44,6 +49,7 @@ if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
     echo Installs ABYSS to INSTALL_DIR/abyss/VERSION
     echo --with-boost BOOST_INCL: set directory for boost headers
     echo --with-sparsehash SPARSEHASH_INCL: set directory for sparsehash headers
+    echo --with-mpi OPENMPI_DIR: set top-level directory for Open MPI
     echo --max-kmer LENGTH: set maximum kmer length \(default 128\)
     exit 1
 fi
@@ -59,6 +65,10 @@ clean_up_file $LOG_FILE
 # Check include directories exist
 check_directory $BOOST_INCL
 check_directory $SPARSEHASH_INCL
+if [ ! -z "$MPI_DIR" ] ; then
+    check_directory $MPI_DIR
+    with_mpi="--with-mpi=$MPI_DIR"
+fi
 # Unpack source code
 unpack_archive $TARGZ
 echo Moving to $ABYSS_DIR
@@ -68,7 +78,8 @@ export CPPFLAGS="-I$SPARSEHASH_INCL"
 do_configure --log $LOG_FILE \
     --with-boost=$BOOST_INCL \
     --prefix=$INSTALL_DIR \
-    --enable-maxk=$MAX_KMER
+    --enable-maxk=$MAX_KMER \
+    $with_mpi
 do_make --log $LOG_FILE
 create_directory $INSTALL_DIR
 do_make --log $LOG_FILE install
