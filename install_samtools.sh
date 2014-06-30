@@ -17,18 +17,21 @@ INSTALL_DIR=$(full_path $INSTALL_DIR)/samtools/$SAMTOOLS_VER
 echo Build samtools from $TARGZ
 echo Version $SAMTOOLS_VER
 unpack_archive $TARGZ
+# Set up build log
+LOG_FILE=$(pwd)/install.samtools.$SAMTOOLS_VER.log
+clean_up_file $LOG_FILE
 # Build samtools
 echo Moving to $SAMTOOLS_DIR
 cd $SAMTOOLS_DIR
 echo -n Resetting CFLAGS in Makefile to add -fPIC...
 sed -i 's/^CFLAGS=		.*/CFLAGS=		-g -Wall -O2 -fPIC #-m64 #-arch ppc/g' Makefile
 echo done
-do_make --log build.log
+do_make --log $LOG_FILE
 # Build bcftools
 check_directory bcftools
 echo Moving to bcftools
 cd bcftools
-do_make --log ../build.log
+do_make --log $LOG_FILE
 cd ..
 # Install executables, headers and libraries
 create_directory $INSTALL_DIR
