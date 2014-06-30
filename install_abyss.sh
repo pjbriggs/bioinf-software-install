@@ -18,11 +18,11 @@ MAX_KMER=128
 # Command line
 while [ $# -gt 2 ] ; do
     case "$1" in
-	--boost-incl)
+	--with-boost)
 	    shift
 	    BOOST_INCL=$1
 	    ;;
-	--sparsehash-incl)
+	--with-sparsehash)
 	    shift
 	    SPARSEHASH_INCL=$1
 	    ;;
@@ -42,8 +42,8 @@ INSTALL_DIR=$2
 if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
     echo Usage: $(basename $0) \[OPTIONS\] TARGZ INSTALL_DIR
     echo Installs ABYSS to INSTALL_DIR/abyss/VERSION
-    echo --boost-incl BOOST_INCL: set directory for boost headers
-    echo --sparsehash-incl SPARSEHASH_INCL: set directory for sparsehash headers
+    echo --with-boost BOOST_INCL: set directory for boost headers
+    echo --with-sparsehash SPARSEHASH_INCL: set directory for sparsehash headers
     echo --max-kmer LENGTH: set maximum kmer length \(default 128\)
     exit 1
 fi
@@ -64,9 +64,11 @@ unpack_archive $TARGZ
 echo Moving to $ABYSS_DIR
 # Do build and install
 cd $ABYSS_DIR
-export CPPFLAGS="-I$BOOST_INCL -I$SPARSEHASH_INCL"
+export CPPFLAGS="-I$SPARSEHASH_INCL"
 do_configure --log $LOG_FILE \
-    --prefix=$INSTALL_DIR --enable-maxk=128
+    --with-boost=$BOOST_INCL \
+    --prefix=$INSTALL_DIR \
+    --enable-maxk=$MAX_KMER
 do_make --log $LOG_FILE
 create_directory $INSTALL_DIR
 do_make --log $LOG_FILE install
