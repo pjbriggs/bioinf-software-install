@@ -17,44 +17,27 @@ INSTALL_DIR=$(full_path $INSTALL_DIR)/samtools/$SAMTOOLS_VER
 echo Build samtools from $TARGZ
 echo Version $SAMTOOLS_VER
 unpack_archive $TARGZ
-if [ ! -d $SAMTOOLS_DIR ] ; then
-  echo ERROR no directory $SAMTOOLS_DIR found >&2
-  exit 1
-fi
+# Build samtools
 echo Moving to $SAMTOOLS_DIR
 cd $SAMTOOLS_DIR
 echo -n Resetting CFLAGS in Makefile to add -fPIC...
 sed -i 's/^CFLAGS=		.*/CFLAGS=		-g -Wall -O2 -fPIC #-m64 #-arch ppc/g' Makefile
 echo done
-echo -n Building in $SAMTOOLS_DIR...
-make >> build.log 2>&1
-echo done
-echo -n Looking for bcftools subdirectory...
-if [ ! -d bcftools ] ; then
-  echo missing
-  echo ERROR no bcftools subdirectory found >&2
-  exit 1
-fi
-echo ok
-echo -n Building in bcftools...
+do_make --log build.log
+# Build bcftools
+check_directory bcftools
+echo Moving to bcftools
 cd bcftools
-make >> ../build.log 2>&1
-echo done
+do_make --log ../build.log
 cd ..
-echo -n Creating $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-echo done
+# Install executables, headers and libraries
+create_directory $INSTALL_DIR
 echo Installing executables
-for f in $(echo samtools bcftools/bcftools) ; do
-  copy_file $f $INSTALL_DIR
-done
+copy_files samtools bcftools/bcftools $INSTALL_DIR
 echo Installing headers and libraries
-for f in $(echo *.h) ; do
-  copy_file $f $INSTALL_DIR
-done
-for f in $(echo *.a) ; do
-  copy_file $f $INSTALL_DIR
-done
+copy_files *.h $INSTALL_DIR
+copy_files *.a $INSTALL_DIR
+# Finish up
 cd ..
 clean_up $TARGZ
 ##
