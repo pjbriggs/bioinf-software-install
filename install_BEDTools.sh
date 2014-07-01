@@ -2,6 +2,10 @@
 #
 # Install BEDTools
 #
+# Works with bedtools 2.17.0
+#            bedtools 2.18.2
+#            bedtools 2.19.1
+#
 . $(dirname $0)/import_functions.sh
 #
 TARGZ=$1
@@ -27,23 +31,17 @@ if [ ! -d $BEDTOOLS_DIR ] ; then
       exit 1
   fi
 fi
-
+# Set up build log file
+LOG_FILE=$(pwd)/install.bedtools.$BEDTOOLS_VER.log
+clean_up_file $LOG_FILE
+# Build
 echo Moving to $BEDTOOLS_DIR
 cd $BEDTOOLS_DIR
-echo -n Running 'make'...
-make >> build.log 2>&1
-if [ $? -ne 0 ] ; then
-    echo FAILED
-    echo ERROR failed to build BEDTools, see $BEDTOOLS_DIR/build.log >&2
-    exit 1
-else
-    echo done
-fi
+do_make --log $LOG_FILE
 # Copy executables to installation location
-echo -n Copying BEDTools executables to $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-cp bin/* $INSTALL_DIR
-echo done
+echo Copying BEDTools executables
+create_directory $INSTALL_DIR
+copy_files bin/* $INSTALL_DIR
 cd ..
 clean_up_dir $BEDTOOLS_DIR
 ##
