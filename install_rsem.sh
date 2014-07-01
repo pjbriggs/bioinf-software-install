@@ -1,6 +1,8 @@
 #!/bin/sh
 #
-# Install samtools
+# Install RSEM
+#
+# Works for version 1.2.12
 #
 . $(dirname $0)/import_functions.sh
 #
@@ -22,20 +24,15 @@ if [ ! -d $RSEM_DIR ] ; then
   echo ERROR no directory $RSEM_DIR found >&2
   exit 1
 fi
+LOG_FILE=$(pwd)/install.rsem.$RSEM_VER.log
+clean_up_file $LOG_FILE
+# Build
 echo Moving to $RSEM_DIR
 cd $RSEM_DIR
-echo -n Building RSEM in $RSEM_DIR...
-make >> build.log 2>&1
-echo done
-echo -n Creating $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-echo done
+do_make --log $LOG_FILE
+create_directory $INSTALL_DIR
 echo Installing executables
-for f in $(ls) ; do
-  if [ -f $f ] && [ -x $f ] ; then
-    copy_file $f $INSTALL_DIR
-  fi
-done
+copy_files --exe * $INSTALL_DIR
 cd ..
 clean_up $TARGZ
 ##
