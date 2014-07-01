@@ -15,22 +15,18 @@ fi
 PERL_DIR=$(package_dir $TARGZ)
 PERL_VER=$(package_version $TARGZ)
 INSTALL_DIR=$(full_path $INSTALL_DIR)/perl/$PERL_VER
+LOG_FILE=$(pwd)/install.perl.$PERL_VER.log
 echo Build perl from $TARGZ
 echo Version $PERL_VER
 unpack_archive $TARGZ
-if [ ! -d $PERL_DIR ] ; then
-  echo ERROR no directory $PERL_DIR found >&2
-  exit 1
-fi
-echo -n Building in $PERL_DIR...
+echo Moving to $PERL_DIR
 cd $PERL_DIR
-./Configure -des -Dprefix=$INSTALL_DIR > build.log 2>&1
-make >> build.log 2>&1
+echo -n Running perl Configure...
+./Configure -des -Dprefix=$INSTALL_DIR >$LOG_FILE 2>&1
 echo done
-echo -n Installing to $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-make install > install.log 2>&1
-echo done
+do_make --log $LOG_FILE
+create_directory $INSTALL_DIR
+do_make --log $LOG_FILE install
 install_cpanminus $INSTALL_DIR/bin/perl
 cd ..
 clean_up $TARGZ
