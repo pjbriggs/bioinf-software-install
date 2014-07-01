@@ -302,10 +302,22 @@ function copy_files() {
     # Copy one or more files to another location
     # 1(,2,...,n-1): file(s) to copy
     # Last argument: target directory
+    #
+    # Optionally: specify --exe as first argument
+    # to only copy executable files
+    local only_exe=
+    if [ "$1" == "--exe" ] ; then
+	only_exe=yes
+	shift
+    fi
     for last; do true; done
     local dir=$last
     while [ $# -gt 1 ] ; do
-	copy_file $1 $dir
+	if [ -z "$only_exe" ] || [ -x $1 ] ; then
+	    if [ -f $1 ] ; then
+		copy_file $1 $dir
+	    fi
+	fi
 	shift
     done
 }
