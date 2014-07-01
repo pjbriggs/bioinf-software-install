@@ -268,7 +268,11 @@ function do_make() {
 	shift
     fi
     echo Make command: make $@ >>$log
-    echo -n Running make...
+    if [ -z "$@" ] ; then
+	echo -n Running make...
+    else
+	echo -n Running make $@...
+    fi
     make $@ >>$log 2>&1
     if [ $? -ne 0 ] ; then
 	echo FAILED
