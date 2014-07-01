@@ -2,6 +2,11 @@
 #
 # Install Freebayes
 #
+# Tested with versions:
+#
+# - 0.9.6  (commit id: 9608597d12e127c847ae03aa03440ab63992fedf)
+# - 0.9.13 (commit id: c807ef8339b3c6bb99fa8083f7689933971257b6)
+#
 . $(dirname $0)/import_functions.sh
 #
 GIT_COMMIT_ID=$1
@@ -38,14 +43,7 @@ if [ $? -ne 0 ] ; then
   exit 1
 fi
 echo done
-echo -n Running make...
-make >> $LOG_FILE 2>&1
-if [ $? -ne 0 ] ; then
-  echo FAILED
-  echo Make returned non-zero exit code
-  exit 1
-fi
-echo done
+do_make --log $LOG_FILE
 echo -n Determining full freebayes version...
 FULL_FREEBAYES_VERSION=$(bin/freebayes | grep ^version: | cut -c9- | tr -d ' ')
 if [ -z "$FULL_FREEBAYES_VERSION" ] ; then
@@ -64,16 +62,11 @@ if [ -z "$FREEBAYES_VERSION" ] ; then
 fi
 echo $FREEBAYES_VERSION
 INSTALL_DIR=$INSTALL_DIR/freebayes/$FREEBAYES_VERSION/$GIT_COMMIT_ID
-echo -n Making installation dir $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-echo done
-echo -n Copying executables...
-cp bin/freebayes bin/bamleftalign $INSTALL_DIR
-echo done
+create_directory $INSTALL_DIR
+echo Installing executables
+copy_files bin/freebayes bin/bamleftalign $INSTALL_DIR
 cd ..
-echo -n Removing $BUILD_DIR...
-rm -rf $BUILD_DIR
-echo done
+clean_up_dir $BUILD_DIR
 exit
 ##
 #
