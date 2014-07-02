@@ -268,7 +268,7 @@ function do_make() {
 	shift
     fi
     echo Make command: make $@ >>$log
-    if [ -z "$@" ] ; then
+    if [ $# -eq 0 ] ; then
 	echo -n Running make...
     else
 	echo -n Running make $@...
