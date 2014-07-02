@@ -216,6 +216,15 @@ function create_directory() {
 	echo done
     fi
 }
+function set_env_var() {
+    # Set the value of an environment variable 
+    # 1: variable name
+    # 2: new value
+    echo -n Setting $1...
+    eval $1=$2
+    export $1
+    echo $2
+}
 function check_directory() {
     # Check if directory exists
     # 1: target directory to check
@@ -227,7 +236,20 @@ function check_directory() {
     else
 	echo ok
     fi
-}   
+}
+function check_program() {
+    # Check if program is available
+    # 1: name/path of program to look for
+    echo -n Checking for program $1...
+    local path=$(which $1 2>&1)
+    if [ -f "$path" ] ; then
+	echo ok \($path\)
+    else
+	echo FAILED
+	echo ERROR $1 not found >&2
+	exit 1
+    fi
+}
 function do_configure() {
     # Run 'configure' using supplied arguments
     # Optionally: first pair of arguments can be "--log FILE"
