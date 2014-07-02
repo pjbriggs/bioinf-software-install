@@ -65,6 +65,7 @@ clean_up_file $LOG_FILE
 # Check include directories exist
 check_directory $BOOST_INCL
 check_directory $SPARSEHASH_INCL
+# Deal with MPI
 if [ ! -z "$MPI_DIR" ] ; then
     check_directory $MPI_DIR
     with_mpi="--with-mpi=$MPI_DIR"
@@ -74,7 +75,7 @@ unpack_archive $TARGZ
 echo Moving to $ABYSS_DIR
 # Do build and install
 cd $ABYSS_DIR
-export CPPFLAGS="-I$SPARSEHASH_INCL"
+set_env_var CPPFLAG -I$SPARSEHASH_INCL
 do_configure --log $LOG_FILE \
     --with-boost=$BOOST_INCL \
     --prefix=$INSTALL_DIR \
