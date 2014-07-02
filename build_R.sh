@@ -13,40 +13,18 @@ if [ -z "$TARGZ" ] || [ -z "$INSTALL_DIR" ] ; then
 fi
 R_DIR=$(package_dir $TARGZ)
 R_VER=$(package_version $TARGZ)
-INSTALL_DIR=$(full_path $INSTALL_DIR)/R/$R_VER
 echo Build R from $TARGZ
 echo Version $R_VER
+INSTALL_DIR=$(full_path $INSTALL_DIR)/R/$R_VER
+LOG_FILE=$(pwd)/install.R.$R_VER.log
+clean_up_file $LOG_FILE
 unpack_archive $TARGZ
-if [ ! -d $R_DIR ] ; then
-  echo ERROR no directory $R_DIR found >&2
-  exit 1
-fi
-echo -n Building in $R_DIR...
+echo Moving to $R_DIR
 cd $R_DIR
-./configure --prefix=$INSTALL_DIR > build.log 2>&1
-if [ $? -ne 0 ] ; then
-    echo FAILED
-    echo configure returned non-zero exit status >&2
-    exit 1
-fi
-make >> build.log 2>&1
-if [ $? -ne 0 ] ; then
-    echo FAILED
-    echo make returned non-zero exit status >&2
-    exit 1
-else
-    echo done
-fi
-echo -n Installing to $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-make install > install.log 2>&1
-if [ $? -ne 0 ] ; then
-    echo FAILED
-    echo make install returned non-zero exit status >&2
-    exit 1
-else
-    echo done
-fi
+do_configure --log $LOG_FILE --prefix=$INSTALL_DIR
+do_make --log $LOG_FILE
+create_directory $INSTALL_DIR
+do_make --log $LOG_FILE install
 cd ..
 clean_up $TARGZ
 ##
