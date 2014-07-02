@@ -15,58 +15,41 @@ fi
 UCSCTOOLS_DIR=kent # always unpacks into "kent"
 UCSCTOOLS_VER=$(echo $ZIP | cut -d"." -f2)
 INSTALL_DIR=$(full_path $INSTALL_DIR)/ucsc-tools/$UCSCTOOLS_VER
+LOG_FILE=$(pwd)/install.ucsc_tools.$UCSCTOOLS_VER.log
+clean_up_file $LOG_FILE
 echo Build ucsc-tools from $ZIP
 echo Version $UCSCTOOLS_VER
 unpack_archive --no-package-dir-check $ZIP
-if [ ! -d $UCSCTOOLS_DIR ] ; then
-  echo ERROR no directory $UCSCTOOLS_DIR found >&2
-  exit 1
-fi
+check_directory $UCSCTOOLS_DIR
+echo -n Moving $UCSCTOOLS_DIR to $UCSCTOOLS_DIR.$UCSCTOOLS_VER...
+mv -f $UCSCTOOLS_DIR $UCSCTOOLS_DIR.$UCSCTOOLS_VER
+echo done
+UCSCTOOLS_DIR=$UCSCTOOLS_DIR.$UCSCTOOLS_VER
 echo Moving to $UCSCTOOLS_DIR
 cd $UCSCTOOLS_DIR
 # Set up the environment
-echo -n Setting MACHTYPE...
-export MACHTYPE=$(echo $MACHTYPE | cut -d"-" -f1)
-echo $MACHTYPE
+set_env_var MACHTYPE $(echo $MACHTYPE | cut -d"-" -f1)
 # Set MySQL variables
-echo -n Setting MYSQLLIBS...
-export MYSQLLIBS=$(mysql_config --libs)
-echo $MYSQLLIBS
-echo -n Setting MYSQLINC...
-export MYSQLINC=$(mysql_config --include)
+check_program mysql_config
+set_env_var MYSQLLIBS $(mysql_config --libs)
+set_env_var MYSQLINC $(mysql_config --include)
 if [ ! -z "$(echo $MYSQLINC | grep '^-I')" ] ; then
-    export MYSQLINC=$(echo $MYSQLINC | cut -c3-) # Remove leading -I
+    set_env_var MYSQLINC $(echo $MYSQLINC | cut -c3-) # Remove leading -I
 fi
-echo $MYSQLINC
 # Create the initial installation directory
-echo -n Setting BINDIR...
-export BINDIR=$(pwd)/bin/$MACHTYPE
-echo $BINDIR
-echo -n Making BINDIR...
-mkdir -p $BINDIR
-echo done
-echo -n Making lib/$MACHTYPE...
-mkdir -p lib/$MACHTYPE
-echo done
-echo -n Building in src...
+set_env_var BINDIR $(pwd)/bin/$MACHTYPE
+create_directory $BINDIR
+create_directory lib/$MACHTYPE
+# Build
+echo Moving to src
 cd src
-make utils blatSuite >> ../build.log 2>&1
-if [ $? -ne 0 ] ; then
-    echo FAILED
-    echo ERROR failed to build UCSC tools, see $UCSCTOOLS_DIR/build.log >&2
-    exit 1
-else
-    echo done
-fi
+do_make --log $LOG_FILE utils userApps blatSuite
 cd ..
 # Copy executables to installation location
-echo -n Copying UCSC tools executables to $INSTALL_DIR...
-mkdir -p $INSTALL_DIR
-cp $BINDIR/* $INSTALL_DIR
-echo done
+echo Copying UCSC tools executables to $INSTALL_DIR
+create_directory $INSTALL_DIR
+copy_files $BINDIR/* $INSTALL_DIR
 cd ..
-echo Removing $UCSCTOOLS_DIR...
-rm -rf $UCSCTOOLS_DIR
-echo done
+clean_up_dir $UCSCTOOLS_DIR
 ##
 #
