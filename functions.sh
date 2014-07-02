@@ -220,10 +220,13 @@ function set_env_var() {
     # Set the value of an environment variable 
     # 1: variable name
     # 2: new value
-    echo -n Setting $1...
-    eval $1=$2
-    export $1
-    echo $2
+    local var=$1
+    shift
+    local val=$@
+    echo -n Setting $var...
+    eval $var='$val'
+    export $var
+    echo $val
 }
 function check_directory() {
     # Check if directory exists
