@@ -177,7 +177,8 @@ packages from source:
  * mothur
  * RSEM
  * samtools
- * ucsc_tools
+ * vcftools <http://vcftools.sourceforge.net/>
+ * ucsc_tools 
 
 and to download and install binary distributions for:
 
@@ -187,3 +188,29 @@ and to download and install binary distributions for:
  * Fastx toolkit
  * Picard tools
  * Tophat
+
+### Build script recipes ###
+
+The scripts use a set of convenience functions defined in `functions.sh`
+to perform common tasks, for example unpacking archive files, running
+`configure` and `make`, copying files, and cleaning up.
+
+A simple example:
+
+    #!/bin/sh
+    . $(dirname $0)/import_functions.sh
+    unpack_archive samtools-1.1.18.tar.gz
+    cd samtools-1.1.18
+    do_make
+    copy_file samtools /usr/local/bin
+
+Generalising this:
+
+    #!/bin/sh
+    . $(dirname $0)/import_functions.sh
+    SAMTOOLS=$1
+    echo Samtools version $(package_version $SAMTOOLS)
+    unpack_archive $SAMTOOLS
+    cd $(package_dir $SAMTOOLS)
+    do_make
+    copy_file samtools $2
