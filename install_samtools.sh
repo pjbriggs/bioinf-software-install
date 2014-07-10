@@ -1,6 +1,8 @@
 #!/bin/sh
 #
 # Install samtools
+# Works for 0.1.18
+#           0.1.19
 #
 . $(dirname $0)/import_functions.sh
 #
@@ -36,7 +38,7 @@ cd ..
 # Install executables, headers and libraries
 create_directory $INSTALL_DIR
 echo Installing executables
-copy_files samtools bcftools/bcftools $INSTALL_DIR
+copy_files samtools bcftools/bcftools bcftools/vcfutils.pl $INSTALL_DIR
 echo Installing headers and libraries
 copy_files *.h $INSTALL_DIR
 copy_files *.a $INSTALL_DIR
