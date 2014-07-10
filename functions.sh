@@ -359,6 +359,11 @@ function copy_file() {
 	echo No directory $2 >&2
     else
 	cp $1 $2
+	if [ -x $1 ] ; then
+	    chmod +rx $2/$(basename $1)
+	else
+	    chmod +r $2/$(basename $1)
+	fi
 	echo done
     fi
 }
