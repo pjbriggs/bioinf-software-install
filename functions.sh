@@ -64,6 +64,36 @@ function python_package_installed() {
 	echo ''
     fi
 }
+function create_virtualenv() {
+    # Create a Python virtualenv in pwd
+    # 1: name of virtualenv
+    echo -n Making virtualenv \'$1\'...
+    if [ -d "$1" ] ; then
+	echo FAILED
+	echo Directory for virtualenv already exists >&2
+	exit 1
+    fi
+    virtualenv $1 2>&1 >/dev/null
+    if [ $? -ne 0 ] ; then
+	echo ERROR
+	echo virtualenv returned non-zero status
+	exit 1
+    fi
+    echo done
+}
+function activate_virtualenv() {
+    # Active an existing virtualenv
+    # 1: name/path of virtualenv
+    echo -n Activating virtualenv \'$1\'...
+    local activate_script=$(full_path $1)/bin/activate
+    if [ ! -f $activate_script ] ; then
+	echo FAILED
+	echo No activation script $activate_script >&2
+	exit 1
+    fi
+    . $activate_script
+    echo ok
+}
 function R_version() {
     # Fetch R version (major.minor)
     echo $($1 --version 2>&1 | grep "^R version" | cut -d" " -f3 | cut -d. -f1-2)
@@ -207,7 +237,10 @@ function unpack_archive() {
 function create_directory() {
     # Create a directory with mkdir -p
     # 1: target directory to create
-    echo -n Creating $1...
+    echo -n Creating directory $1...
+    if [ -d "$1" ] ; then
+	echo already exists
+    fi
     mkdir -p $1
     if [ $? -ne 0 ] ; then
 	FAILED
@@ -406,17 +439,20 @@ function pip_install() {
     # 1: python bin directory (full path)
     # 2: package specifier
     local pip_install_cmd="$1/pip install"
+    local package=$(basename $2)
+    local pip_install_log="pip_install.${package%%=}.log"
     if [ ! -z "$($pip_install_cmd -h | grep '\--no-use-wheel')" ] ; then
 	pip_install_cmd="$pip_install_cmd --no-use-wheel"
     fi
     pip_install_cmd="$pip_install_cmd $2"
-    echo -n "$pip_install_cmd"...
-    $pip_install_cmd > pip_install.${2%%=}.log 2>&1
+    echo -n "Installing $package using pip ($pip_install_cmd)..."
+    $pip_install_cmd >$pip_install_log  2>&1
     status=$?
     if [ "$status" -eq 0 ] ; then
 	echo done
     else
 	echo FAILED
+	echo See log $pip_install_log
     fi
     return $status
 }
