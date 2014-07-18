@@ -452,7 +452,7 @@ function pip_install() {
 	echo done
     else
 	echo FAILED
-	echo See log $pip_install_log
+	echo "!!!! Installation of '$package' failed: see log $pip_install_log !!!!"
     fi
     return $status
 }
