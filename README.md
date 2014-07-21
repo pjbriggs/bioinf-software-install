@@ -189,6 +189,10 @@ and to download and install binary distributions for:
  * Picard tools
  * Tophat
 
+There is also script to install and configure a local instance of Galaxy:
+
+ * install_galaxy.sh
+
 ### Build script recipes ###
 
 The scripts use a set of convenience functions defined in `functions.sh`
