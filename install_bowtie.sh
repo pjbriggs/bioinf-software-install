@@ -13,7 +13,7 @@ if [ -z "$BOWTIE_VERSION" ] || [ -z "$INSTALL_DIR" ] ; then
 fi
 echo Install Bowtie version $BOWTIE_VERSION
 echo -n Determine whether bowtie or bowtie2...
-BOWTIE=bowtie$(echo $BOWTIE_VERSION | cut -d. -f1 | grep -v "^1$")
+BOWTIE=bowtie$(echo $BOWTIE_VERSION | cut -d. -f1 | grep -v "^1$" | grep -v "^0$")
 echo $BOWTIE
 ZIP_FILE=${BOWTIE}-${BOWTIE_VERSION}-linux-x86_64.zip
 ZIP_URL=http://sourceforge.net/projects/bowtie-bio/files/$BOWTIE/$BOWTIE_VERSION/$ZIP_FILE
