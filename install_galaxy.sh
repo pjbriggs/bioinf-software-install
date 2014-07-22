@@ -25,6 +25,9 @@ Options
    --release TAG  Update Galaxy code to release TAG
    --name         Name to use as the 'brand' (defaults
                   to the directory name)
+   --repo URL     Specify repository to install Galaxy
+                  code from (defaults to galaxy-dist
+                  from bitbucket)
 EOF
 }
 function hg_clone() {
@@ -112,6 +115,7 @@ function run_command() {
 GALAXY_DIR=
 port=
 admin_users=
+galaxy_repo=https://bitbucket.org/galaxy/galaxy-dist
 release_tag=
 name=
 # Command line
@@ -132,6 +136,10 @@ while [ $# -ge 1 ] ; do
 	--name)
 	    shift
 	    name=$1
+	    ;;
+	--repo)
+	    shift
+	    galaxy_repo=$1
 	    ;;
 	-h|--help)
 	    usage
@@ -163,11 +171,13 @@ echo "### Install and configure local Galaxy instance ###"
 echo "###################################################"
 # Settings
 report_value "Install new Galaxy instance in" $GALAXY_DIR
+report_value "Install code from" $galaxy_repo
 report_value "Set name to" $name
 report_value "Set port to" $port
 report_value "Set admin users to" $admin_users
 report_value "Set release tag to" $release_tag
 # Check prerequisites
+check_program python
 check_program virtualenv
 check_program hg
 check_program pwgen
@@ -187,9 +197,12 @@ pip_install galaxy_venv/bin numpy
 # Install patched Rpy
 pip_install galaxy_venv/bin \
     https://dl.dropbox.com/s/r0lknbav2j8tmkw/rpy-1.0.3-patched.tar.gz?dl=1
+# Install bioblend
+pip_install galaxy_venv/bin bioblend
 # Fetch Galaxy code
-hg_clone https://bitbucket.org/galaxy/galaxy-dist
-cd galaxy-dist
+hg_clone $galaxy_repo
+galaxy_src=$(basename $galaxy_repo)
+cd $galaxy_src
 run_command --log $LOG_FILE "Switching to Galaxy stable branch" hg update stable
 if [ ! -z "$release_tag" ] ; then
     run_command --log $LOG_FILE "Pulling in all updates" hg pull
@@ -219,7 +232,7 @@ create_directory shed_tools
 create_directory managed_packages
 # Make conf file for local tools
 echo -n Creating empty local_tool_conf.xml file...
-cat > galaxy-dist/local_tool_conf.xml <<EOF
+cat > $galaxy_src/local_tool_conf.xml <<EOF
 <?xml version="1.0"?>
 <toolbox tool_path="../local_tools">
 <label id="local_tools" text="Local Tools" />
@@ -231,33 +244,33 @@ cat > galaxy-dist/local_tool_conf.xml <<EOF
 EOF
 echo done
 # Create wrapper script to run galaxy
-echo -n Making generic wrapper script \'start_galaxy.sh\'...
-cat > start_galaxy.sh <<EOF
+echo -n Making wrapper script \'run_galaxy.sh\'...
+cat > run_galaxy.sh <<EOF
 #!/bin/sh
-# Automatically generated script to run galaxy
-# in $(basename $GALAXY_DIR)
+# Automatically generated script to run galaxy in $(basename $GALAXY_DIR)
+# Galaxy code from $galaxy_repo
 GALAXY_DIR=\$(dirname \$0)
 if [ -z \$(echo \$GALAXY_DIR | grep "^/") ] ; then
   GALAXY_DIR=\$(pwd)/\$GALAXY_DIR
 fi
-echo -n Starting Galaxy from \$GALAXY_DIR
-if [ ! -z "$@" ] ; then
-  echo using options:
-  echo \$@
+echo -n "Running Galaxy from \$GALAXY_DIR"
+if [ ! -z "\$@" ] ; then
+  echo " using options: \$@"
 else
   echo
 fi
 # Activate virtualenv
 . \$GALAXY_DIR/galaxy_venv/bin/activate
-# Start Galaxy with --reload option
-cd \$GALAXY_DIR/galaxy-dist
-sh run.sh --reload \$@ 2>&1 | tee \$GALAXY_DIR/galaxy.log
+# Run Galaxy with the specified options
+cd \$GALAXY_DIR/$galaxy_src
+sh run.sh \$@ 2>&1
+##
+#
 EOF
-chmod +x start_galaxy.sh
+chmod +x run_galaxy.sh
 echo done
 # Finished
 deactivate
 echo "Finished installing Galaxy in $GALAXY_DIR"
-# 
 ##
 #
