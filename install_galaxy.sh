@@ -23,6 +23,8 @@ Options
                   NB the user(s) must still be created
                   once Galaxy is running
    --release TAG  Update Galaxy code to release TAG
+   --name         Name to use as the 'brand' (defaults
+                  to the directory name)
 EOF
 }
 function hg_clone() {
@@ -111,6 +113,7 @@ GALAXY_DIR=
 port=
 admin_users=
 release_tag=
+name=
 # Command line
 while [ $# -ge 1 ] ; do
     case "$1" in
@@ -125,7 +128,10 @@ while [ $# -ge 1 ] ; do
 	--release)
 	    shift
 	    release_tag=$1
-	    echo Use release tag \'$release_tag\'
+	    ;;
+	--name)
+	    shift
+	    name=$1
 	    ;;
 	-h|--help)
 	    usage
@@ -149,11 +155,15 @@ elif [ -e $GALAXY_DIR ] ; then
   echo ERROR $GALAXY_DIR: directory already exists >&2
   exit 1
 fi
+if [ -z "$name" ] ; then
+    name=$(basename $GALAXY_DIR)
+fi
 echo "###################################################"
 echo "### Install and configure local Galaxy instance ###"
 echo "###################################################"
 # Settings
 report_value "Install new Galaxy instance in" $GALAXY_DIR
+report_value "Set name to" $name
 report_value "Set port to" $port
 report_value "Set admin users to" $admin_users
 report_value "Set release tag to" $release_tag
@@ -191,7 +201,7 @@ echo Configuring settings in universe_wsgi.ini
 configure_galaxy id_secret $(pwgen 8 1)
 configure_galaxy port $port
 configure_galaxy admin_users $admin_users
-configure_galaxy brand "$(basename $GALAXY_DIR)"
+configure_galaxy brand $name
 configure_galaxy tool_config_file tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml
 configure_galaxy allow_library_path_paste True
 # Set the master API key for bootstrapping
