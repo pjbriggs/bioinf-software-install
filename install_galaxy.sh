@@ -5,6 +5,26 @@
 . $(dirname $0)/import_functions.sh
 #
 # Functions
+function usage() {
+    # Display usage information
+    cat <<EOF
+Usage:
+
+   $(basename $0) [options] DIR
+
+Install and configure a local Galaxy instance in DIR
+
+Options
+   -h, --help     Display this help text
+   --port PORT    Configure Galaxy to use PORT, rather
+                  than default 8080
+   --admin_users EMAIL[,EMAIL...]
+                  Set one or more admin user emails
+                  NB the user(s) must still be created
+                  once Galaxy is running
+   --release TAG  Update Galaxy code to release TAG
+EOF
+}
 function hg_clone() {
     # Run hg clone on a repository
     # 1: repo URL
