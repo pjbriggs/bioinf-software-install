@@ -71,6 +71,14 @@ function configure_galaxy() {
 	echo done
     fi
 }
+function report_value() {
+    # Report the value of a variable, if set
+    # 1: message
+    # 2: value
+    if [ ! -z "$2" ] ; then
+	echo $1 \'$2\'
+    fi
+}
 function run_command() {
     # Wrapper to run an arbitrary command
     # run_command [ --log LOG ] DESCRIPTION CMD ARGS...
@@ -105,33 +113,33 @@ admin_users=
 release_tag=
 # Command line
 while [ $# -ge 1 ] ; do
-    if [ "$1" == "--port" ] ; then
-        # User specified port number
-	shift
-	if [ ! -z "$1" ] ; then
+    case "$1" in
+	--port)
+	    shift
 	    port=$1
-	fi
-    elif [ "$1" == "--admin_users" ] ; then
-	shift
-	if [ ! -z "$1" ] ; then
+	    ;;
+	--admin_users)
+	    shift
 	    admin_users=$1
-	fi
-    elif [ "$1" == "--release" ] ; then
-	shift
-	if [ ! -z "$1" ] ; then
+	    ;;
+	--release)
+	    shift
 	    release_tag=$1
-	fi
-    elif [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
-	usage
-	exit 0
-    else
-	if [ $# -eq 1 ] ; then
-	    GALAXY_DIR=$(full_path $1)
-	else
-	    echo "Unrecognised argument: $1"
-	fi
-    fi
-    # Next argument
+	    echo Use release tag \'$release_tag\'
+	    ;;
+	-h|--help)
+	    usage
+	    exit 0
+	    ;;
+	*)
+	    if [ $# -eq 1 ] ; then
+		GALAXY_DIR=$(full_path $1)
+	    else
+		echo "Unrecognised argument: $1" >&2
+		exit 1
+	    fi
+	    ;;
+    esac
     shift
 done
 if [ -z "$GALAXY_DIR" ] ; then
@@ -144,6 +152,11 @@ fi
 echo "###################################################"
 echo "### Install and configure local Galaxy instance ###"
 echo "###################################################"
+# Settings
+report_value "Install new Galaxy instance in" $GALAXY_DIR
+report_value "Set port to" $port
+report_value "Set admin users to" $admin_users
+report_value "Set release tag to" $release_tag
 # Check prerequisites
 check_program virtualenv
 check_program hg
