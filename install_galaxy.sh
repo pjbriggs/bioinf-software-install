@@ -215,8 +215,9 @@ configure_galaxy id_secret $(pwgen 8 1)
 configure_galaxy port $port
 configure_galaxy admin_users $admin_users
 configure_galaxy brand $name
-configure_galaxy tool_config_file tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml
+configure_galaxy tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml"
 configure_galaxy allow_library_path_paste True
+configure_galaxy tool_dependency_dir "../tool_dependencies"
 # Set the master API key for bootstrapping
 ##configure_galaxy master_api_key $(pwgen 16 1)
 # Initialise: fetch eggs, copy sample file, create database etc
@@ -229,7 +230,7 @@ cd ..
 echo Creating supporting directories
 create_directory local_tools
 create_directory shed_tools
-create_directory managed_packages
+create_directory tool_dependencies
 # Make conf file for local tools
 echo -n Creating empty local_tool_conf.xml file...
 cat > $galaxy_src/local_tool_conf.xml <<EOF
