@@ -76,6 +76,25 @@ function configure_galaxy() {
 	echo done
     fi
 }
+function unset_galaxy_parameter() {
+    # Comment out a parameter set in universe_wsgi.ini
+    # file
+    # 1: parameter
+    local universe_wsgi=universe_wsgi.ini
+    if [ ! -f "$universe_wsgi" ] ; then
+	echo ERROR
+	echo No file \'$universe_wsgi\' >&2
+	exit 1
+    fi
+    echo -n Commenting out \'$1\' in $universe_wsgi...
+    sed -i 's,'"$1"' = .*,#'"$1"' = '"$s"',' $universe_wsgi
+    if [ $? -ne 0 ] ; then
+	echo FAILED
+	exit 1
+    else
+	echo done
+    fi
+}
 function report_value() {
     # Report the value of a variable, if set
     # 1: message
@@ -244,6 +263,7 @@ cat > $galaxy_src/local_tool_conf.xml <<EOF
 </toolbox>
 EOF
 echo done
+# 
 # Create wrapper script to run galaxy
 echo -n Making wrapper script \'run_galaxy.sh\'...
 cat > run_galaxy.sh <<EOF
