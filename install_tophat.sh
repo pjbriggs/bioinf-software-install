@@ -13,7 +13,8 @@ if [ -z "$TOPHAT_VERSION" ] || [ -z "$INSTALL_DIR" ] ; then
 fi
 echo Install Tophat version $TOPHAT_VERSION
 TGZ_FILE=tophat-${TOPHAT_VERSION}.Linux_x86_64.tar.gz
-TGZ_URL=http://tophat.cbcb.umd.edu/downloads/$TGZ_FILE
+##TGZ_URL=http://tophat.cbcb.umd.edu/downloads/$TGZ_FILE
+TGZ_URL=http://ccb.jhu.edu/software/tophat/downloads/$TGZ_FILE
 if [ -f $TGZ_FILE ] ; then
   echo ERROR $TGZ_FILE already exists >&2
   exit 1
