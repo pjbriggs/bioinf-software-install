@@ -171,6 +171,7 @@ Standalone scripts also exist to build the following bioinformatics
 packages from source:
 
  * ABYSS <http://www.bcgsc.ca/platform/bioinfo/software/abyss/>
+ * bcl2fastq
  * BEDTools
  * freebayes
  * MEME suite
