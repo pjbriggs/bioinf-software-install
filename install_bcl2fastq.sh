@@ -39,8 +39,7 @@ mv -f $BCL2FASTQ_DIR $BCL2FASTQ_DIR-$BCL2FASTQ_VER
 BCL2FASTQ_DIR=$(full_path $BCL2FASTQ_DIR-$BCL2FASTQ_VER)
 echo done
 # Patch for overloading function (needed for FC19 with Boost 1.53)
-# See # http://stackoverflow.com/questions/10827542/unresolved-overloaded-function-type-for-fspa
-thstring
+# See # http://stackoverflow.com/questions/10827542/unresolved-overloaded-function-type-for-fspathstring
 echo -n Patching src/c++/lib/demultiplex/BclDemultiplexer.cpp...
 cd $BCL2FASTQ_DIR
 patch -p1 1>$LOG_FILE 2>&1 <<EOF
