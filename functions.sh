@@ -288,21 +288,38 @@ function check_program() {
 }
 function do_configure() {
     # Run 'configure' using supplied arguments
-    # Optionally: first pair of arguments can be "--log FILE"
-    # then stdout and stderr are appended to FILE
+    # Optionally initial argument pairs can be:
+    #
+    # --log FILE = stdout and stderr are appended to FILE
+    # --dir DIR  = run configure script located in DIR
+    #
     # Remaining args are passed to configure
     local log="&1"
-    if [ "$1" == "--log" ] ; then
-	shift
-	log=$1
-	shift
-    fi
-    local configure_cmd="./configure $@"
+    local check_args=yes
+    local configure_dir=$(pwd)
+    while [ ! -z "$check_args" ] ; do
+	case "$1" in
+	    "--log")
+		shift
+		log=$1
+		shift
+		;;
+	    "--dir")
+		shift
+		configure_dir=$1
+		shift
+		;;
+	    *)
+		check_args=
+		;;
+	esac
+    done
+    local configure_cmd="${configure_dir}/configure $@"
     echo Configure command: $configure_cmd >>$log
     echo -n Running configure...
-    if [ ! -f "./configure" ] ; then
+    if [ ! -f "${configure_dir}/configure" ] ; then
 	echo FAILED
-	echo No configure script in $(pwd) >&2
+	echo No configure script in $configure_dir >&2
 	exit 1
     fi
     $configure_cmd >>$log 2>&1
