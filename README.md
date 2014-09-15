@@ -172,12 +172,14 @@ packages from source:
 
  * ABYSS <http://www.bcgsc.ca/platform/bioinfo/software/abyss/>
  * bcl2fastq
+ * bcftools (version 1.0+) <http://www.htslib.org/download/>
  * BEDTools
  * freebayes
+ * htslib <http://www.htslib.org/download/>
  * MEME suite
  * mothur
  * RSEM
- * samtools
+ * samtools <http://samtools.sourceforge.net/> (pre-1.0) and <http://www.htslib.org/download/> (1.0 onwards)
  * vcftools <http://vcftools.sourceforge.net/>
  * ucsc_tools 
 
