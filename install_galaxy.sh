@@ -213,9 +213,6 @@ create_virtualenv galaxy_venv
 activate_virtualenv galaxy_venv
 # Install NumPy
 pip_install galaxy_venv/bin numpy
-# Install patched Rpy
-pip_install galaxy_venv/bin \
-    https://dl.dropbox.com/s/r0lknbav2j8tmkw/rpy-1.0.3-patched.tar.gz?dl=1
 # Install bioblend
 pip_install galaxy_venv/bin bioblend
 # Fetch Galaxy code
@@ -241,8 +238,15 @@ configure_galaxy tool_dependency_dir "../tool_dependencies"
 ##master_api_key=$(pwgen 16 1)
 ##configure_galaxy master_api_key $master_api_key
 # Initialise: fetch eggs, copy sample file, create database etc
-run_command --log $LOG_FILE "Fetching python eggs" python scripts/fetch_eggs.py
-run_command --log $LOG_FILE "Copying sample files" scripts/copy_sample_files.sh
+if [ -f scripts/common_startup.sh ] ; then
+    run_command --log $LOG_FILE "Initialising eggs and sample files" \
+	scripts/common_startup.sh
+else
+    run_command --log $LOG_FILE "Fetching python eggs" \
+	python scripts/fetch_eggs.py
+    run_command --log $LOG_FILE "Copying sample files" \
+	scripts/copy_sample_files.sh
+fi
 run_command --log $LOG_FILE "Creating the database" python scripts/create_db.py
 run_command --log $LOG_FILE "Migrating tools" sh manage_tools.sh upgrade
 cd ..

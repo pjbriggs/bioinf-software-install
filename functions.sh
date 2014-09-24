@@ -502,11 +502,13 @@ function install_python_package() {
     echo -n Prepending $lib_dir to PYTHONPATH...
     prepend_path PYTHONPATH $lib_dir
     echo done
-    echo -n Installing into $3...
+    local package=$(package_name $2)
+    echo -n Installing $package into $3...
     local install_cmd="$1 setup.py install --prefix=$3"
     $install_cmd > install.log 2>&1
-    if [ "$?" -eq 0 ] ; then
-	local package=$(package_name $2)
+    status=$?
+    cd ..
+    if [ "$status" -eq 0 ] ; then
 	echo done: version $(python_package_installed $1 $package)
     else
 	echo FAILED
@@ -515,7 +517,6 @@ function install_python_package() {
     echo -n Setting read permissions on EGG-INFO files...
     find $lib_dir -type d -name "EGG-INFO" -exec chmod -R +rX {} \;
     echo done
-    cd ..
 }
 ##
 #

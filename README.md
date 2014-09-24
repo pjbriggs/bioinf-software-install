@@ -178,6 +178,7 @@ packages from source:
  * htslib <http://www.htslib.org/download/>
  * MEME suite
  * mothur
+ * QIIME <http://qiime.org/documentation_index.html>
  * RSEM
  * samtools <http://samtools.sourceforge.net/> (pre-1.0) and <http://www.htslib.org/download/> (1.0 onwards)
  * vcftools <http://vcftools.sourceforge.net/>
@@ -192,7 +193,7 @@ and to download and install binary distributions for:
  * Picard tools
  * Tophat
 
-There is also script to install and configure a local instance of Galaxy:
+There is also a script to install and configure a local instance of Galaxy:
 
  * install_galaxy.sh
 
