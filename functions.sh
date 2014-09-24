@@ -240,13 +240,14 @@ function create_directory() {
     echo -n Creating directory $1...
     if [ -d "$1" ] ; then
 	echo already exists
-    fi
-    mkdir -p $1
-    if [ $? -ne 0 ] ; then
-	FAILED
-	exit 1
     else
-	echo done
+        mkdir -p $1
+	if [ $? -ne 0 ] ; then
+	    FAILED
+	    exit 1
+	else
+	    echo done
+	fi
     fi
 }
 function set_env_var() {
