@@ -238,7 +238,8 @@ configure_galaxy tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_c
 configure_galaxy allow_library_path_paste True
 configure_galaxy tool_dependency_dir "../tool_dependencies"
 # Set the master API key for bootstrapping
-##configure_galaxy master_api_key $(pwgen 16 1)
+##master_api_key=$(pwgen 16 1)
+##configure_galaxy master_api_key $master_api_key
 # Initialise: fetch eggs, copy sample file, create database etc
 run_command --log $LOG_FILE "Fetching python eggs" python scripts/fetch_eggs.py
 run_command --log $LOG_FILE "Copying sample files" scripts/copy_sample_files.sh
