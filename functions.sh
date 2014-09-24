@@ -156,7 +156,7 @@ function wget_url() {
     # Fetch a URL using wget
     # 1: url to retrieve
     echo -n Fetching $(basename $1) from $1...
-    wget --no-check-certificate -q $1
+    wget --no-check-certificate -O $(basename $1) -q $1
     if [ ! -e "$(basename $1)" ] ; then
 	echo FAILED
 	return 1
