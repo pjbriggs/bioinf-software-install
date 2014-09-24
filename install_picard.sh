@@ -23,13 +23,18 @@ if [ -f $PICARD_VERSION ] ; then
   ZIP_FILE=$PICARD_VERSION
   PICARD_VERSION=$(package_dir $ZIP_FILE | cut -d"-" -f3)
 else
+  do_download=yes
   ZIP_FILE=picard-tools-${PICARD_VERSION}.zip
 fi
 echo Install Picard tools version $PICARD_VERSION
 # Acquire archive
-if [ -f $ZIP_FILE ] ; then
+if [ -z "$do_download" ] ; then
   echo Using existing zip archive $ZIP_FILE
 else
+  if [ -f $ZIP_FILE ] ; then
+     echo ERROR $ZIP_FILE already exists >&2
+     exit 1
+  fi
   # Determine download location from version
   MAJOR_PICARD_VERSION=$(echo $PICARD_VERSION | cut -d"." -f1)
   MINOR_PICARD_VERSION=$(echo $PICARD_VERSION | cut -d"." -f2)
