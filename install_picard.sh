@@ -2,6 +2,9 @@
 #
 # Fetch and install Picard binaries
 #
+# For versions <= 1.119 download from sourceforge
+# For versions >= 1.120 download from github
+#
 . $(dirname $0)/import_functions.sh
 #
 PICARD_VERSION=$1
@@ -13,11 +16,20 @@ if [ -z "$PICARD_VERSION" ] || [ -z "$INSTALL_DIR" ] ; then
 fi
 echo Install Picard tools version $PICARD_VERSION
 ZIP_FILE=picard-tools-${PICARD_VERSION}.zip
-ZIP_URL=http://sourceforge.net/projects/picard/files/picard-tools/${PICARD_VERSION}/$ZIP_FILE
+# Determine download location from version
+MAJOR_PICARD_VERSION=$(echo $PICARD_VERSION | cut -d"." -f1)
+MINOR_PICARD_VERSION=$(echo $PICARD_VERSION | cut -d"." -f2)
+if [ "$MAJOR_PICARD_VERSION" == 1 ] && [ "$MINOR_PICARD_VERSION" -le 119 ] ; then
+  ZIP_URL=http://sourceforge.net/projects/picard/files/picard-tools
+else
+  ZIP_URL=https://github.com/broadinstitute/picard/releases/download
+fi
+ZIP_URL=$ZIP_URL/${PICARD_VERSION}/$ZIP_FILE
 if [ -f $ZIP_FILE ] ; then
   echo ERROR $ZIP_FILE already exists >&2
   exit 1
 fi
+# Download and install
 wget_url $ZIP_URL
 unpack_archive $ZIP_FILE
 INSTALL_DIR=$(full_path $INSTALL_DIR)/picard-tools/$PICARD_VERSION
@@ -26,7 +38,9 @@ mkdir -p $INSTALL_DIR
 echo done
 copy_contents $(package_dir $ZIP_FILE) $INSTALL_DIR
 clean_up $ZIP_FILE
-clean_up_file snappy-java-1.0.3-rc3.jar
+if [ -f snappy-java-1.0.3-rc3.jar ] ; then
+  clean_up_file snappy-java-1.0.3-rc3.jar
+fi
 ##
 #
 
