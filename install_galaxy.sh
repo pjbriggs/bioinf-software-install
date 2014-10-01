@@ -28,6 +28,10 @@ Options
    --repo URL     Specify repository to install Galaxy
                   code from (defaults to galaxy-dist
                   from bitbucket)
+   --master-api-key
+                  Set the master API key to a random
+                  value (waring: don't use for a
+                  public instance)
 EOF
 }
 function hg_clone() {
@@ -68,7 +72,7 @@ function configure_galaxy() {
     # Escape special characters in value (commas,slashes)
     local s=$(echo $2 | cut -d, -f1- --output-delimiter='\,')
     s=$(echo $s | cut -d/ -f1- --output-delimiter='\/')
-    sed -i 's,#'"$1"' = .*,'"$1"' = '"$s"',' $universe_wsgi
+    sed -i 's,#'"$1"'[ ]*=.*,'"$1"' = '"$s"',' $universe_wsgi
     if [ $? -ne 0 ] ; then
 	echo FAILED
 	exit 1
@@ -137,6 +141,7 @@ admin_users=
 galaxy_repo=https://bitbucket.org/galaxy/galaxy-dist
 release_tag=
 name=
+use_master_api_key=
 # Command line
 while [ $# -ge 1 ] ; do
     case "$1" in
@@ -159,6 +164,9 @@ while [ $# -ge 1 ] ; do
 	--repo)
 	    shift
 	    galaxy_repo=$1
+	    ;;
+	--master-api-key)
+	    use_master_api_key=yes
 	    ;;
 	-h|--help)
 	    usage
@@ -235,8 +243,10 @@ configure_galaxy tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_c
 configure_galaxy allow_library_path_paste True
 configure_galaxy tool_dependency_dir "../tool_dependencies"
 # Set the master API key for bootstrapping
-##master_api_key=$(pwgen 16 1)
-##configure_galaxy master_api_key $master_api_key
+if [ ! -z "$use_master_api_key" ] ; then
+    master_api_key=$(pwgen 16 1)
+    configure_galaxy master_api_key $master_api_key
+fi
 # Initialise: fetch eggs, copy sample file, create database etc
 if [ -f scripts/common_startup.sh ] ; then
     run_command --log $LOG_FILE "Initialising eggs and sample files" \
