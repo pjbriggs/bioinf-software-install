@@ -22,15 +22,23 @@ INSTALL_DIR=$(full_path $INSTALL_DIR)/bedtools/$BEDTOOLS_VER
 echo Build bedtools from $TARGZ
 echo Version $BEDTOOLS_VER
 unpack_archive --no-package-dir-check $TARGZ
-if [ ! -d $BEDTOOLS_DIR ] ; then
-  echo WARNING no directory $BEDTOOLS_DIR found
-  BEDTOOLS_DIR=bedtools2-${BEDTOOLS_VER}
-  echo Trying $BEDTOOLS_DIR instead
-  if [ ! -d $BEDTOOLS_DIR ] ; then
-      echo ERROR no source code directory found >&2
-      exit 1
+# Look for unpacked directory
+echo Locating bedtools source directory
+for d in $BEDTOOLS_DIR bedtools2-${BEDTOOLS_VER} bedtools2 ; do
+  echo -n Checking for $d...
+  if [ ! -d $d ] ; then
+      echo not found
+  else
+      echo found
+      bedtools_dir=$d
+      break
   fi
+done
+if [ -z "$bedtools_dir" ] ; then
+  echo ERROR no source code directory found >&2
+  exit 1
 fi
+BEDTOOLS_DIR=$bedtools_dir
 # Set up build log file
 LOG_FILE=$(pwd)/install.bedtools.$BEDTOOLS_VER.log
 clean_up_file $LOG_FILE
