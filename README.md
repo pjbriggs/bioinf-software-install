@@ -184,8 +184,9 @@ packages from source:
  * vcftools <http://vcftools.sourceforge.net/>
  * ucsc_tools 
 
-and to download and install binary distributions for:
+and to install binary distributions for:
 
+ * ANNOVAR <http://www.openbioinformatics.org/annovar/>
  * NCBI Blast+
  * Bowtie/Bowtie2
  * Cufflinks
