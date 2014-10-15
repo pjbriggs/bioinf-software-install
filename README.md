@@ -181,6 +181,7 @@ packages from source:
  * QIIME <http://qiime.org/documentation_index.html>
  * RSEM
  * samtools <http://samtools.sourceforge.net/> (pre-1.0) and <http://www.htslib.org/download/> (1.0 onwards)
+ * STAR <https://github.com/alexdobin/STAR>
  * vcftools <http://vcftools.sourceforge.net/>
  * ucsc_tools 
 
