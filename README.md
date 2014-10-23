@@ -183,7 +183,8 @@ packages from source:
  * samtools <http://samtools.sourceforge.net/> (pre-1.0) and <http://www.htslib.org/download/> (1.0 onwards)
  * STAR <https://github.com/alexdobin/STAR>
  * vcftools <http://vcftools.sourceforge.net/>
- * ucsc_tools 
+ * ucsc_tools
+ * Weeder (version 2.0+) <http://159.149.160.51/modtools/>
 
 and to install binary distributions for:
 
