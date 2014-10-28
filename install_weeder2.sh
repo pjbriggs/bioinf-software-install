@@ -25,6 +25,11 @@ create_directory $WEEDER_DIR
 echo Moving to $WEEDER_DIR
 cd $WEEDER_DIR
 unpack_archive --no-package-dir-check $TARGZ
+# Update FreqFiles location in source code to point to
+# final installation location
+echo -n Setting location of FreqFiles in source code...
+sed -i 's,./FreqFiles,'"$INSTALL_DIR/FreqFiles"',g' weeder2.cpp
+echo done
 # Build
 BUILD_CMD="g++ weeder2.cpp -o weeder2 -O3"
 echo -n Running $BUILD_CMD...
