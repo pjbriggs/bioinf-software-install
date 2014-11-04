@@ -59,7 +59,8 @@ function configure_galaxy() {
     # universe_wsgi.ini file
     # 1: parameter
     # 2: new value
-    local universe_wsgi=universe_wsgi.ini
+    # 3: config file
+    local universe_wsgi=$3
     if [ -z "$2" ] ; then
 	return
     fi
@@ -84,7 +85,8 @@ function unset_galaxy_parameter() {
     # Comment out a parameter set in universe_wsgi.ini
     # file
     # 1: parameter
-    local universe_wsgi=universe_wsgi.ini
+    # 2: config file
+    local universe_wsgi=$2
     if [ ! -f "$universe_wsgi" ] ; then
 	echo ERROR
 	echo No file \'$universe_wsgi\' >&2
@@ -233,19 +235,25 @@ if [ ! -z "$release_tag" ] ; then
     run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update $release_tag
 fi
 # Create custom universe_wsgi.ini file
-run_command "Creating universe_wsgi.ini file" cp universe_wsgi.ini.sample universe_wsgi.ini
-echo Configuring settings in universe_wsgi.ini
-configure_galaxy id_secret $(pwgen 8 1)
-configure_galaxy port $port
-configure_galaxy admin_users $admin_users
-configure_galaxy brand $name
-configure_galaxy tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml"
-configure_galaxy allow_library_path_paste True
-configure_galaxy tool_dependency_dir "../tool_dependencies"
+if [ -f universe_wsgi.ini.sample ] ; then
+    run_command "Creating universe_wsgi.ini file" cp universe_wsgi.ini.sample universe_wsgi.ini
+    export CONFIG_FILE=universe_wsgi.ini
+elif [ -f config/galaxy.ini.sample ] ; then
+    run_command "Creating config/galaxy.ini file" cp config/galaxy.ini.sample config/galaxy.ini
+    export CONFIG_FILE=config/galaxy.ini
+fi  
+echo Configuring settings in $CONFIG_FILE
+configure_galaxy id_secret $(pwgen 8 1) $CONFIG_FILE
+configure_galaxy port $port $CONFIG_FILE
+configure_galaxy admin_users $admin_users $CONFIG_FILE
+configure_galaxy brand $name $CONFIG_FILE
+configure_galaxy tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml" $CONFIG_FILE
+configure_galaxy allow_library_path_paste True $CONFIG_FILE
+configure_galaxy tool_dependency_dir "../tool_dependencies" $CONFIG_FILE
 # Set the master API key for bootstrapping
 if [ ! -z "$use_master_api_key" ] ; then
     master_api_key=$(pwgen 16 1)
-    configure_galaxy master_api_key $master_api_key
+    configure_galaxy master_api_key $master_api_key $CONFIG_FILE
 fi
 # Initialise: fetch eggs, copy sample file, create database etc
 if [ -f scripts/common_startup.sh ] ; then
