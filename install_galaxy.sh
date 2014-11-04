@@ -231,6 +231,15 @@ galaxy_src=$(basename $galaxy_repo)
 cd $galaxy_src
 run_command --log $LOG_FILE "Switching to Galaxy stable branch" hg update stable
 if [ ! -z "$release_tag" ] ; then
+    echo -n Checking that $release_tag exists...
+    got_release_tag=$(hg tags | grep -w "^$release_tag")
+    if [ -z "$got_release_tag" ] ; then
+	echo not found
+	echo ERROR no release tag \"$release_tag\" >&2
+	exit 1
+    else
+	echo yes
+    fi
     run_command --log $LOG_FILE "Pulling in all updates" hg pull
     run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update $release_tag
 fi
