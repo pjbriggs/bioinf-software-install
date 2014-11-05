@@ -32,6 +32,9 @@ echo -n Creating $INSTALL_DIR...
 mkdir -p $INSTALL_DIR
 echo done
 copy_contents $BOWTIE_DIR $INSTALL_DIR
+echo -n Setting permissions on executables for all...
+chmod ugo+rx $INSTALL_DIR/bowtie*
+echo done
 clean_up_dir $BOWTIE_DIR
 echo "#%Module1.0"
 echo "## $BOWTIE $BOWTIE_VERSION modulefile"
