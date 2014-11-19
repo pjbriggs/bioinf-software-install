@@ -175,6 +175,7 @@ packages from source:
  * bcftools (version 1.0+) <http://www.htslib.org/download/>
  * BEDTools
  * freebayes
+ * HMMER <http://hmmer.janelia.org/>
  * htslib <http://www.htslib.org/download/>
  * MEME suite
  * mothur
