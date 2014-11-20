@@ -5,6 +5,8 @@
 # Works with bedtools 2.17.0
 #            bedtools 2.18.2
 #            bedtools 2.19.1
+#            bedtools 2.21.0
+#            bedtools 2.22.0
 #
 . $(dirname $0)/import_functions.sh
 #
@@ -25,7 +27,7 @@ unpack_archive --no-package-dir-check $TARGZ
 # Look for unpacked directory
 echo Locating bedtools source directory
 for d in $BEDTOOLS_DIR bedtools2-${BEDTOOLS_VER} bedtools2 ; do
-  echo -n Checking for $d...
+  echo -n Checking for directory $d...
   if [ ! -d $d ] ; then
       echo not found
   else

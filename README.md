@@ -173,7 +173,7 @@ packages from source:
  * ABYSS <http://www.bcgsc.ca/platform/bioinfo/software/abyss/>
  * bcl2fastq
  * bcftools (version 1.0+) <http://www.htslib.org/download/>
- * BEDTools
+ * BEDTools <https://github.com/arq5x/bedtools2/releases>
  * freebayes
  * HMMER <http://hmmer.janelia.org/>
  * htslib <http://www.htslib.org/download/>
