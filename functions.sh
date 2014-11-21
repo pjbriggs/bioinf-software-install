@@ -164,6 +164,56 @@ function wget_url() {
     echo done
     return 0
 }
+function hg_clone() {
+    # Run hg clone on a repository
+    # 1: repo URL
+    local log=
+    if [ "$1" == "--log" ] ; then
+	shift
+	log=$1
+	shift
+    elif [ "$1" == "--no-log" ] ; then
+	shift
+	log=/dev/null
+    else
+	log=hg_clone.$(basename $1).log
+    fi
+    echo -n "Cloning hg repo $1..."
+    hg clone $1 >> $log
+    if [ $? -ne 0 ] || [ ! -d $(basename $1) ] ; then
+	echo FAILED
+	echo Error cloning repo, see $log >&2
+	exit 1
+    fi
+    echo "ok"
+}
+function run_command() {
+    # Wrapper to run an arbitrary command
+    # run_command [ --log LOG ] DESCRIPTION CMD ARGS...
+    # Optionally first two arguments can be '--log LOG'
+    # to specify a file to send stdout/stderr to (defaults
+    # to /dev/null)
+    # 1: description text
+    # 2...: command line to execute
+    local log=
+    if [ "$1" == "--log" ] ; then
+	shift
+	log=$1
+	shift
+    fi
+    if [ -z "$log" ] ; then
+	log=/dev/null
+    fi
+    echo -n $1
+    shift
+    echo -n " ($@)..."
+    $@ >>$log 2>&1
+    if [ $? -ne 0 ] ; then
+	echo FAILED
+    else
+	echo done
+    fi
+}
 function package_dir() {
     # Get directory for package in targz/zip archive
     # 1: archive file

@@ -34,34 +34,14 @@ Options
                   public instance)
 EOF
 }
-function hg_clone() {
-    # Run hg clone on a repository
-    # 1: repo URL
-    local log=
-    if [ "$1" == "--log" ] ; then
-	shift
-	log=$1
-	shift
-    else
-	log=hg_clone.$(basename $1).log
-    fi
-    echo -n "Cloning hg repo $1..."
-    hg clone $1 >> $log
-    if [ $? -ne 0 ] || [ ! -d $(basename $1) ] ; then
-	echo FAILED
-	echo Error cloning repo, see $log >&2
-	exit 1
-    fi
-    echo "ok"
-}
 function configure_galaxy() {
     # Update the value of a parameter in the
     # universe_wsgi.ini file
-    # 1: parameter
-    # 2: new value
-    # 3: config file
-    local universe_wsgi=$3
-    if [ -z "$2" ] ; then
+    # 1: config file
+    # 2: parameter
+    # 3: new value
+    local universe_wsgi=$1
+    if [ -z "$3" ] ; then
 	return
     fi
     if [ ! -f "$universe_wsgi" ] ; then
@@ -69,11 +49,11 @@ function configure_galaxy() {
 	echo No file \'$universe_wsgi\' >&2
 	exit 1
     fi
-    echo -n Setting \'$1\' to \'$2\' in $universe_wsgi...
+    echo -n Setting \'$2\' to \'$3\' in $universe_wsgi...
     # Escape special characters in value (commas,slashes)
-    local s=$(echo $2 | cut -d, -f1- --output-delimiter='\,')
+    local s=$(echo $3 | cut -d, -f1- --output-delimiter='\,')
     s=$(echo $s | cut -d/ -f1- --output-delimiter='\/')
-    sed -i 's,#'"$1"'[ ]*=.*,'"$1"' = '"$s"',' $universe_wsgi
+    sed -i 's,#'"$2"'[ ]*=.*,'"$2"' = '"$s"',' $universe_wsgi
     if [ $? -ne 0 ] ; then
 	echo FAILED
 	exit 1
@@ -107,33 +87,6 @@ function report_value() {
     # 2: value
     if [ ! -z "$2" ] ; then
 	echo $1 \'$2\'
-    fi
-}
-function run_command() {
-    # Wrapper to run an arbitrary command
-    # run_command [ --log LOG ] DESCRIPTION CMD ARGS...
-    # Optionally first two arguments can be '--log LOG'
-    # to specify a file to send stdout/stderr to (defaults
-    # to /dev/null)
-    # 1: description text
-    # 2...: command line to execute
-    local log=
-    if [ "$1" == "--log" ] ; then
-	shift
-	log=$1
-	shift
-    fi
-    if [ -z "$log" ] ; then
-	log=/dev/null
-    fi
-    echo -n $1
-    shift
-    echo -n " ($@)..."
-    $@ >>$log 2>&1
-    if [ $? -ne 0 ] ; then
-	echo FAILED
-    else
-	echo done
     fi
 }
 # Main script
@@ -252,17 +205,17 @@ elif [ -f config/galaxy.ini.sample ] ; then
     export CONFIG_FILE=config/galaxy.ini
 fi  
 echo Configuring settings in $CONFIG_FILE
-configure_galaxy id_secret $(pwgen 8 1) $CONFIG_FILE
-configure_galaxy port $port $CONFIG_FILE
-configure_galaxy admin_users $admin_users $CONFIG_FILE
-configure_galaxy brand $name $CONFIG_FILE
-configure_galaxy tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml" $CONFIG_FILE
-configure_galaxy allow_library_path_paste True $CONFIG_FILE
-configure_galaxy tool_dependency_dir "../tool_dependencies" $CONFIG_FILE
+configure_galaxy $CONFIG_FILE id_secret $(pwgen 8 1)
+configure_galaxy $CONFIG_FILE port $port
+configure_galaxy $CONFIG_FILE admin_users $admin_users
+configure_galaxy $CONFIG_FILE brand $name
+configure_galaxy $CONFIG_FILE tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml"
+configure_galaxy $CONFIG_FILE allow_library_path_paste True
+configure_galaxy $CONFIG_FILE tool_dependency_dir "../tool_dependencies"
 # Set the master API key for bootstrapping
 if [ ! -z "$use_master_api_key" ] ; then
     master_api_key=$(pwgen 16 1)
-    configure_galaxy master_api_key $master_api_key $CONFIG_FILE
+    configure_galaxy $CONFIG_FILE master_api_key $master_api_key
 fi
 # Initialise: fetch eggs, copy sample file, create database etc
 if [ -f scripts/common_startup.sh ] ; then
