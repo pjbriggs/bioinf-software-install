@@ -25,7 +25,7 @@ COMMIT_ID=$2
 INSTALL_DIR=$(full_path $3)
 if [ -z "$PYTHON" ] || [ -z "$COMMIT_ID" ] || [ -z "$INSTALL_DIR" ] ; then
   echo Usage: $(basename $0) PYTHON COMMIT_ID INSTALL_DIR
-  echo Installs ceasBW package from cistrome into INSTALL_DIR/ceasbw/COMMIT_ID
+  echo Installs ceasBW package from cistrome into INSTALL_DIR/ceasbw/DATE-COMMIT_ID
   echo 
   echo NB ceasBW is an alternative version of the CEAS package
   echo which can handle bigWig files. It is NOT versioned officially
@@ -38,9 +38,11 @@ echo Using Python from $(dirname $PYTHON)
 hg_clone --no-log https://bitbucket.org/cistrome/cistrome-applications-harvard
 cd cistrome-applications-harvard
 run_command "Switching to commit id $COMMIT_ID" hg update -r $COMMIT_ID
+COMMIT_DATE=$(hg heads | grep ^date: | cut -d: -f2- | awk '{print $1,$2,$3,$5,$4,$6,$7}')
+COMMIT_DATE=$(date --date="$COMMIT_DATE" +%Y%m%d)
 cd ..
 # Installation directory
-INSTALL_DIR=$INSTALL_DIR/ceasbw/$COMMIT_ID
+INSTALL_DIR=$INSTALL_DIR/ceasbw/${COMMIT_DATE}-$COMMIT_ID
 echo Installing under $INSTALL_DIR
 create_directory $INSTALL_DIR
 # Handle dependencies
