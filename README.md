@@ -174,6 +174,8 @@ packages from source:
  * bcl2fastq
  * bcftools (version 1.0+) <http://www.htslib.org/download/>
  * BEDTools <https://github.com/arq5x/bedtools2/releases>
+ * ceasBW (bigWig-friendly version of CEAS)
+   <https://bitbucket.org/cistrome/cistrome-applications-harvard/src/d8c075170bb5a10987efa774c93df3c01864d5da/published-packages/CEAS/>
  * freebayes
  * HMMER <http://hmmer.janelia.org/>
  * htslib <http://www.htslib.org/download/>
