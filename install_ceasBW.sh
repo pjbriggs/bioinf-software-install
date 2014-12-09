@@ -35,11 +35,13 @@ fi
 echo Installing ceasBW commit id $COMMIT_ID
 echo Using Python from $(dirname $PYTHON)
 # Clone the cistrome source code
+check_program hg
 hg_clone --no-log https://bitbucket.org/cistrome/cistrome-applications-harvard
 cd cistrome-applications-harvard
 run_command "Switching to commit id $COMMIT_ID" hg update -r $COMMIT_ID
 COMMIT_DATE=$(hg heads | grep ^date: | cut -d: -f2- | awk '{print $1,$2,$3,$5,$4,$6,$7}')
 COMMIT_DATE=$(date --date="$COMMIT_DATE" +%Y%m%d)
+echo Date stamp is $COMMIT_DATE
 cd ..
 # Installation directory
 INSTALL_DIR=$INSTALL_DIR/ceasbw/${COMMIT_DATE}-$COMMIT_ID
