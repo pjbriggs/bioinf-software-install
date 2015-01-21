@@ -32,6 +32,10 @@ Options
                   Set the master API key to a random
                   value (waring: don't use for a
                   public instance)
+   --install-numpy
+                  Install numpy into the virtualenv
+                  (warning: may conflict with tool
+                  dependencies from toolsheds)
 EOF
 }
 function configure_galaxy() {
@@ -97,6 +101,7 @@ galaxy_repo=https://bitbucket.org/galaxy/galaxy-dist
 release_tag=
 name=
 use_master_api_key=
+install_numpy=
 # Command line
 while [ $# -ge 1 ] ; do
     case "$1" in
@@ -122,6 +127,9 @@ while [ $# -ge 1 ] ; do
 	    ;;
 	--master-api-key)
 	    use_master_api_key=yes
+	    ;;
+	--with-numpy)
+	    install_numpy=yes
 	    ;;
 	-h|--help)
 	    usage
@@ -175,7 +183,9 @@ cd $GALAXY_DIR
 create_virtualenv galaxy_venv
 activate_virtualenv galaxy_venv
 # Install NumPy
-pip_install galaxy_venv/bin numpy
+if [ ! -z "$install_numpy" ] ; then
+    pip_install galaxy_venv/bin numpy
+fi
 # Install bioblend
 pip_install galaxy_venv/bin bioblend
 # Fetch Galaxy code
