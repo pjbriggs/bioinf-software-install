@@ -39,25 +39,24 @@ Options
 EOF
 }
 function configure_galaxy() {
-    # Update the value of a parameter in the
-    # universe_wsgi.ini file
+    # Update the value of a parameter in Galaxy config file
     # 1: config file
     # 2: parameter
     # 3: new value
-    local universe_wsgi=$1
+    local config_file=$1
     if [ -z "$3" ] ; then
 	return
     fi
-    if [ ! -f "$universe_wsgi" ] ; then
+    if [ ! -f "$config_file" ] ; then
 	echo ERROR
-	echo No file \'$universe_wsgi\' >&2
+	echo No file \'$config_file\' >&2
 	exit 1
     fi
-    echo -n Setting \'$2\' to \'$3\' in $universe_wsgi...
+    echo -n Setting \'$2\' to \'$3\' in $config_file...
     # Escape special characters in value (commas,slashes)
     local s=$(echo $3 | cut -d, -f1- --output-delimiter='\,')
     s=$(echo $s | cut -d/ -f1- --output-delimiter='\/')
-    sed -i 's,#'"$2"'[ ]*=.*,'"$2"' = '"$s"',' $universe_wsgi
+    sed -i 's,#'"$2"'[ ]*=.*,'"$2"' = '"$s"',' $config_file
     if [ $? -ne 0 ] ; then
 	echo FAILED
 	exit 1
@@ -66,24 +65,34 @@ function configure_galaxy() {
     fi
 }
 function unset_galaxy_parameter() {
-    # Comment out a parameter set in universe_wsgi.ini
-    # file
+    # Comment out a parameter set in Galaxy config file
     # 1: parameter
     # 2: config file
-    local universe_wsgi=$2
-    if [ ! -f "$universe_wsgi" ] ; then
+    local config_file=$2
+    if [ ! -f "$config_file" ] ; then
 	echo ERROR
-	echo No file \'$universe_wsgi\' >&2
+	echo No file \'$config_file\' >&2
 	exit 1
     fi
-    echo -n Commenting out \'$1\' in $universe_wsgi...
-    sed -i 's,'"$1"' = .*,#'"$1"' = '"$s"',' $universe_wsgi
+    echo -n Commenting out \'$1\' in $config_file...
+    sed -i 's,'"$1"' = .*,#'"$1"' = '"$s"',' $config_file
     if [ $? -ne 0 ] ; then
 	echo FAILED
 	exit 1
     else
 	echo done
     fi
+}
+function get_galaxy_parameter() {
+    # Fetch the value of a parameter in Galaxy config file
+    # 1: parameter
+    # 2: config file
+    local config_file=$2
+    if [ ! -f "$config_file" ] ; then
+	return
+    fi
+    local value=$(grep "^$1 =" $config_file | cut -d= -f2)
+    echo $value
 }
 function report_value() {
     # Report the value of a variable, if set
@@ -219,7 +228,6 @@ configure_galaxy $CONFIG_FILE id_secret $(pwgen 8 1)
 configure_galaxy $CONFIG_FILE port $port
 configure_galaxy $CONFIG_FILE admin_users $admin_users
 configure_galaxy $CONFIG_FILE brand $name
-configure_galaxy $CONFIG_FILE tool_config_file "tool_conf.xml,shed_tool_conf.xml,local_tool_conf.xml"
 configure_galaxy $CONFIG_FILE allow_library_path_paste True
 configure_galaxy $CONFIG_FILE tool_dependency_dir "../tool_dependencies"
 # Set the master API key for bootstrapping
@@ -227,7 +235,7 @@ if [ ! -z "$use_master_api_key" ] ; then
     master_api_key=$(pwgen 16 1)
     configure_galaxy $CONFIG_FILE master_api_key $master_api_key
 fi
-# Initialise: fetch eggs, copy sample file, create database etc
+# Initialise: fetch eggs & copy sample files
 if [ -f scripts/common_startup.sh ] ; then
     run_command --log $LOG_FILE "Initialising eggs and sample files" \
 	scripts/common_startup.sh
@@ -237,6 +245,36 @@ else
     run_command --log $LOG_FILE "Copying sample files" \
 	scripts/copy_sample_files.sh
 fi
+# Deal with tool conf files
+# Newer versions of Galaxy (post 2014.08.11?) don't create tool_conf.xml
+# by default, and also expect it to be in the 'config' subdirectory
+config_dir=$(dirname $CONFIG_FILE)
+CONF_FILES=
+for tool_conf_xml in tool_conf.xml shed_tool_conf.xml ; do
+    tool_conf_xml=$config_dir/$tool_conf_xml
+    if [ ! -f $tool_conf_xml ] ; then
+	if [ -f $tool_conf_xml.sample ] ; then
+	    echo -n "Creating $tool_conf_xml from sample file..."
+	    cp $tool_conf_xml.sample $tool_conf_xml
+	    echo done
+	elif [ ! -f $tool_conf_xml.sample ] ; then
+	    echo WARNING no $tool_conf_xml file and no sample file
+	fi
+    else
+	echo Found existing $tool_conf_xml file
+    fi
+    if [ -f $tool_conf_xml ] ; then
+	if [ -z "$CONF_FILES" ] ; then
+	    CONF_FILES=$tool_conf_xml
+	else
+	    CONF_FILES=$CONF_FILES,$tool_conf_xml
+	fi
+    fi
+done
+if [ ! -z "$CONF_FILES" ] ; then
+    configure_galaxy $CONFIG_FILE tool_config_file "$CONF_FILES"
+fi
+# Create database and migrate tools
 run_command --log $LOG_FILE "Creating the database" python scripts/create_db.py
 run_command --log $LOG_FILE "Migrating tools" sh manage_tools.sh upgrade
 cd ..
@@ -247,9 +285,16 @@ create_directory shed_tools
 create_directory tool_dependencies
 # Make conf file for local tools
 echo -n Creating empty local_tool_conf.xml file...
-cat > $galaxy_src/local_tool_conf.xml <<EOF
+if [ -d $galaxy_src/config ] ; then
+    tool_conf_xml=config/local_tool_conf.xml
+    tool_path=../../local_tools
+else
+    tool_conf_xml=local_tool_conf.xml
+    tool_path=../local_tools
+fi
+cat > $galaxy_src/$tool_conf_xml <<EOF
 <?xml version="1.0"?>
-<toolbox tool_path="../local_tools">
+<toolbox tool_path="$tool_path">
 <label id="local_tools" text="Local Tools" />
   <!-- Example of section and tool definitions -->
   <section id="example_tools" name="Local Tools">
@@ -258,6 +303,8 @@ cat > $galaxy_src/local_tool_conf.xml <<EOF
 </toolbox>
 EOF
 echo done
+CONF_FILES=$(get_galaxy_parameter tool_config_file $galaxy_src/$CONFIG_FILE),$tool_conf_xml
+configure_galaxy $galaxy_src/$CONFIG_FILE tool_config_file "$CONF_FILES"
 # 
 # Create wrapper script to run galaxy
 echo -n Making wrapper script \'run_galaxy.sh\'...
