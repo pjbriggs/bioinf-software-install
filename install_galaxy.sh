@@ -1,4 +1,4 @@
-#!/bin/sh -f
+#!/bin/bash
 #
 # Install and configure local Galaxy
 #
