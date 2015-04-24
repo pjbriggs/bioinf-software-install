@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install samtools
 # Works for 0.1.18
