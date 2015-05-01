@@ -230,6 +230,7 @@ configure_galaxy $CONFIG_FILE admin_users $admin_users
 configure_galaxy $CONFIG_FILE brand $name
 configure_galaxy $CONFIG_FILE allow_library_path_paste True
 configure_galaxy $CONFIG_FILE tool_dependency_dir "../tool_dependencies"
+configure_galaxy $CONFIG_FILE allow_user_dataset_purge True
 # Set the master API key for bootstrapping
 if [ ! -z "$use_master_api_key" ] ; then
     master_api_key=$(pwgen 16 1)
