@@ -28,6 +28,10 @@ Options
    --repo URL     Specify repository to install Galaxy
                   code from (defaults to galaxy-dist
                   from bitbucket)
+   --vcs VCS      Explicitly set version control
+                  program to VCS (either 'hg' or 'git';
+                  defaults to 'git' if repo is github,
+                  otherwise defaults to 'hg')
    --master-api-key
                   Set the master API key to a random
                   value (waring: don't use for a
@@ -111,6 +115,7 @@ release_tag=
 name=
 use_master_api_key=
 install_numpy=
+vcs=
 # Command line
 while [ $# -ge 1 ] ; do
     case "$1" in
@@ -139,6 +144,10 @@ while [ $# -ge 1 ] ; do
 	    ;;
 	--with-numpy)
 	    install_numpy=yes
+	    ;;
+	--vcs)
+	    shift
+	    vcs=$1
 	    ;;
 	-h|--help)
 	    usage
@@ -197,23 +206,48 @@ if [ ! -z "$install_numpy" ] ; then
 fi
 # Install bioblend
 pip_install galaxy_venv/bin bioblend
-# Fetch Galaxy code
-hg_clone $galaxy_repo
-galaxy_src=$(basename $galaxy_repo)
-cd $galaxy_src
-run_command --log $LOG_FILE "Switching to Galaxy stable branch" hg update stable
-if [ ! -z "$release_tag" ] ; then
-    echo -n Checking that tag \"$release_tag\" exists...
-    got_release_tag=$(hg tags | grep -w "^$release_tag")
-    if [ -z "$got_release_tag" ] ; then
-	echo not found
-	echo ERROR no tag \"$release_tag\" >&2
-	exit 1
+# Detect whether we're using git(hub)
+if [ -z "$vcs" ] ; then
+    echo -n Setting VCS...
+    if [ ! -z "$(echo $galaxy_repo | grep github)" ] ; then
+	vcs=git
     else
-	echo yes
+	vcs=hg
     fi
-    run_command --log $LOG_FILE "Pulling in all updates" hg pull
-    run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update $release_tag
+    echo $vcs
+fi
+# Fetch Galaxy code
+if [ "$vcs" == "hg" ] ; then
+    # Using hg clone
+    hg_clone $galaxy_repo
+    galaxy_src=$(basename $galaxy_repo)
+    cd $galaxy_src
+    run_command --log $LOG_FILE "Switching to Galaxy stable branch" hg update stable
+    if [ ! -z "$release_tag" ] ; then
+	echo -n Checking that tag \"$release_tag\" exists...
+	got_release_tag=$(hg tags | grep -w "^$release_tag")
+	if [ -z "$got_release_tag" ] ; then
+	    echo not found
+	    echo ERROR no tag \"$release_tag\" >&2
+	    exit 1
+	else
+	    echo yes
+	fi
+	run_command --log $LOG_FILE "Pulling in all updates" hg pull
+	run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update $release_tag
+    fi
+elif [ "$vcs" == "git" ] ; then
+    # Using git clone
+    git_clone $galaxy_repo
+    galaxy_src=$(basename $galaxy_repo)
+    cd $galaxy_src
+    if [ ! -z "$release_tag" ] ; then
+	echo WARNING ignoring \"$release_tag\" for git VCS >&2
+    fi
+else
+    # Unknown VCS
+    echo ERROR unknown VCS \"$vcs\" >&2
+    exit 1
 fi
 # Create custom universe_wsgi.ini file
 if [ -f universe_wsgi.ini.sample ] ; then
