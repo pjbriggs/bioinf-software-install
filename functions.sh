@@ -187,6 +187,29 @@ function hg_clone() {
     fi
     echo "ok"
 }
+function git_clone() {
+    # Run git clone on a repository
+    # 1: repo URL
+    local log=
+    if [ "$1" == "--log" ] ; then
+	shift
+	log=$1
+	shift
+    elif [ "$1" == "--no-log" ] ; then
+	shift
+	log=/dev/null
+    else
+	log=git_clone.$(basename $1).log
+    fi
+    echo -n "Cloning git repo $1..."
+    git clone $1 >> $log
+    if [ $? -ne 0 ] || [ ! -d $(basename $1) ] ; then
+	echo FAILED
+	echo Error cloning repo, see $log >&2
+	exit 1
+    fi
+    echo "ok"
+}
 function run_command() {
     # Wrapper to run an arbitrary command
     # run_command [ --log LOG ] DESCRIPTION CMD ARGS...
