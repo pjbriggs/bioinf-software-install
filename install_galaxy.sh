@@ -367,6 +367,33 @@ sh run.sh \$@ 2>&1
 EOF
 chmod +x run_galaxy.sh
 echo done
+#
+# Create wrapper script to run toolshed
+echo -n Making wrapper script \'run_toolshed.sh\'...
+cat > run_toolshed.sh <<EOF
+#!/bin/sh
+# Automatically generated script to run toolshed in $(basename $GALAXY_DIR)
+# Galaxy code from $galaxy_repo
+GALAXY_DIR=\$(dirname \$0)
+if [ -z \$(echo \$GALAXY_DIR | grep "^/") ] ; then
+  GALAXY_DIR=\$(pwd)/\$GALAXY_DIR
+fi
+echo -n "Running Galaxy toolshed from \$GALAXY_DIR"
+if [ ! -z "\$@" ] ; then
+  echo " using options: \$@"
+else
+  echo
+fi
+# Activate virtualenv
+. \$GALAXY_DIR/galaxy_venv/bin/activate
+# Run Galaxy with the specified options
+cd \$GALAXY_DIR/$galaxy_src
+sh run_tool_shed.sh \$@ 2>&1
+##
+#
+EOF
+chmod +x run_toolshed.sh
+echo done
 # Finished
 deactivate
 echo "Finished installing Galaxy in $GALAXY_DIR"
