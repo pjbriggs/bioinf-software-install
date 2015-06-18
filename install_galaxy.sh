@@ -254,7 +254,7 @@ elif [ "$vcs" == "git" ] ; then
     galaxy_src=$(basename $galaxy_repo)
     cd $galaxy_src
     if [ ! -z "$release_tag" ] ; then
-	echo WARNING ignoring \"$release_tag\" for git VCS >&2
+	run_command --log $LOG_FILE "Switching to releas tag $release_tag" git checkout $release_tag
     fi
 else
     # Unknown VCS
