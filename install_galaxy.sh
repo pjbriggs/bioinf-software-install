@@ -170,6 +170,15 @@ if [ -z "$GALAXY_DIR" ] ; then
 elif [ -e $GALAXY_DIR ] ; then
   echo ERROR $GALAXY_DIR: directory already exists >&2
   exit 1
+elif [ ! -z "$(echo $(basename $GALAXY_DIR) | grep ^-)" ] ; then
+  GALAXY_DIR=$(basename $GALAXY_DIR)
+  if [ $GALAXY_DIR == "-h" ] || [ $GALAXY_DIR == "--help" ] ; then
+    usage
+    exit 1
+  else
+    echo "Invalid target directory: $GALAXY_DIR" >&2
+    exit 1
+  fi
 fi
 if [ -z "$name" ] ; then
     name=$(basename $GALAXY_DIR)
@@ -191,12 +200,12 @@ check_program hg
 check_program pwgen
 check_program R
 check_program samtools
-# Set up install log
-LOG_FILE=$(pwd)/install.galaxy.$(basename $GALAXY_DIR).log
-clean_up_file $LOG_FILE
 # Start
 create_directory $GALAXY_DIR
 cd $GALAXY_DIR
+# Set up install log
+LOG_FILE=$(pwd)/install.galaxy.$(basename $GALAXY_DIR).log
+clean_up_file $LOG_FILE
 # Create and activate a Python virtualenv for this instance
 create_virtualenv galaxy_venv
 activate_virtualenv galaxy_venv
