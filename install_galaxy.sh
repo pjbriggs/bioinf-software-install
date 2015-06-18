@@ -196,7 +196,6 @@ report_value "Set release tag to" $release_tag
 # Check prerequisites
 check_program python
 check_program virtualenv
-check_program hg
 check_program pwgen
 check_program R
 check_program samtools
@@ -227,6 +226,8 @@ if [ -z "$vcs" ] ; then
 fi
 # Fetch Galaxy code
 if [ "$vcs" == "hg" ] ; then
+    # Check for mercurial
+    check_program hg
     # Using hg clone
     hg_clone $galaxy_repo
     galaxy_src=$(basename $galaxy_repo)
@@ -243,9 +244,11 @@ if [ "$vcs" == "hg" ] ; then
 	    echo yes
 	fi
 	run_command --log $LOG_FILE "Pulling in all updates" hg pull
-	run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update $release_tag
+	run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update -C $release_tag
     fi
 elif [ "$vcs" == "git" ] ; then
+    # Check for git
+    check_program git
     # Using git clone
     git_clone $galaxy_repo
     galaxy_src=$(basename $galaxy_repo)
