@@ -170,6 +170,15 @@ if [ -z "$GALAXY_DIR" ] ; then
 elif [ -e $GALAXY_DIR ] ; then
   echo ERROR $GALAXY_DIR: directory already exists >&2
   exit 1
+elif [ ! -z "$(echo $(basename $GALAXY_DIR) | grep ^-)" ] ; then
+  GALAXY_DIR=$(basename $GALAXY_DIR)
+  if [ $GALAXY_DIR == "-h" ] || [ $GALAXY_DIR == "--help" ] ; then
+    usage
+    exit 1
+  else
+    echo "Invalid target directory: $GALAXY_DIR" >&2
+    exit 1
+  fi
 fi
 if [ -z "$name" ] ; then
     name=$(basename $GALAXY_DIR)
@@ -187,16 +196,15 @@ report_value "Set release tag to" $release_tag
 # Check prerequisites
 check_program python
 check_program virtualenv
-check_program hg
 check_program pwgen
 check_program R
 check_program samtools
-# Set up install log
-LOG_FILE=$(pwd)/install.galaxy.$(basename $GALAXY_DIR).log
-clean_up_file $LOG_FILE
 # Start
 create_directory $GALAXY_DIR
 cd $GALAXY_DIR
+# Set up install log
+LOG_FILE=$(pwd)/install.galaxy.$(basename $GALAXY_DIR).log
+clean_up_file $LOG_FILE
 # Create and activate a Python virtualenv for this instance
 create_virtualenv galaxy_venv
 activate_virtualenv galaxy_venv
@@ -218,6 +226,8 @@ if [ -z "$vcs" ] ; then
 fi
 # Fetch Galaxy code
 if [ "$vcs" == "hg" ] ; then
+    # Check for mercurial
+    check_program hg
     # Using hg clone
     hg_clone $galaxy_repo
     galaxy_src=$(basename $galaxy_repo)
@@ -234,15 +244,17 @@ if [ "$vcs" == "hg" ] ; then
 	    echo yes
 	fi
 	run_command --log $LOG_FILE "Pulling in all updates" hg pull
-	run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update $release_tag
+	run_command --log $LOG_FILE "Switching to release tag $release_tag" hg update -C $release_tag
     fi
 elif [ "$vcs" == "git" ] ; then
+    # Check for git
+    check_program git
     # Using git clone
     git_clone $galaxy_repo
     galaxy_src=$(basename $galaxy_repo)
     cd $galaxy_src
     if [ ! -z "$release_tag" ] ; then
-	echo WARNING ignoring \"$release_tag\" for git VCS >&2
+	run_command --log $LOG_FILE "Switching to releas tag $release_tag" git checkout $release_tag
     fi
 else
     # Unknown VCS
