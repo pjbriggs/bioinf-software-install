@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install Weeder2
 # Works for 2.0

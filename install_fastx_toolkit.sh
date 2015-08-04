@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install fastx_toolkit and gtextutils
 #

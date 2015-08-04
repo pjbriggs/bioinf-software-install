@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install STAR mapper
 # Works for 2.4.0d

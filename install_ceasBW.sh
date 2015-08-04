@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install ceasBW package from the cistrome bitbucket repository
 #

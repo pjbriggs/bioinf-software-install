@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install hmmer
 # Works for 3.1b1

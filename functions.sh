@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Function library for build/install scripts
 #

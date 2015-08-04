@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install htslib
 # Works for 1.0

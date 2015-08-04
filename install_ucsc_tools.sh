@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install UCSC tools (AKA Kent tools)
 #

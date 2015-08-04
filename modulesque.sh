@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Function library providing environment module-like functions
 # for adding and removing paths to path-type variables:

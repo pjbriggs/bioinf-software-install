@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install Illumina's bcl2fastq software
 #

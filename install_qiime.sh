@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install qiime
 # See http://qiime.org/install/install.html

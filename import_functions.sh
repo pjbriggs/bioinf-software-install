@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Import shell library functions
 _srcdir=$(dirname ${BASH_SOURCE[0]})

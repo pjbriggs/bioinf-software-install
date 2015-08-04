@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install bcftools
 # Works for 1.0

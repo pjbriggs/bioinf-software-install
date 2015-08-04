@@ -356,7 +356,7 @@ configure_galaxy $galaxy_src/$CONFIG_FILE tool_config_file "$CONF_FILES"
 # Create wrapper script to run galaxy
 echo -n Making wrapper script \'run_galaxy.sh\'...
 cat > run_galaxy.sh <<EOF
-#!/bin/sh
+#!/bin/bash
 # Automatically generated script to run galaxy in $(basename $GALAXY_DIR)
 # Galaxy code from $galaxy_repo
 GALAXY_DIR=\$(dirname \$0)
@@ -383,7 +383,7 @@ echo done
 # Create wrapper script to run toolshed
 echo -n Making wrapper script \'run_toolshed.sh\'...
 cat > run_toolshed.sh <<EOF
-#!/bin/sh
+#!/bin/bash
 # Automatically generated script to run toolshed in $(basename $GALAXY_DIR)
 # Galaxy code from $galaxy_repo
 GALAXY_DIR=\$(dirname \$0)
