@@ -26,8 +26,8 @@ Options
    --name         Name to use as the 'brand' (defaults
                   to the directory name)
    --repo URL     Specify repository to install Galaxy
-                  code from (defaults to galaxy-dist
-                  from bitbucket)
+                  code from (defaults to
+                  https://github.com/galaxyproject/galaxy)
    --vcs VCS      Explicitly set version control
                   program to VCS (either 'hg' or 'git';
                   defaults to 'git' if repo is github,
@@ -110,7 +110,7 @@ function report_value() {
 GALAXY_DIR=
 port=
 admin_users=
-galaxy_repo=https://bitbucket.org/galaxy/galaxy-dist
+galaxy_repo=https://github.com/galaxyproject/galaxy
 release_tag=
 name=
 use_master_api_key=
