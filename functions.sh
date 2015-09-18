@@ -202,7 +202,7 @@ function git_clone() {
 	log=git_clone.$(basename $1).log
     fi
     echo -n "Cloning git repo $1..."
-    git clone $1 >> $log
+    git clone -qq $1 >> $log
     if [ $? -ne 0 ] || [ ! -d $(basename $1) ] ; then
 	echo FAILED
 	echo Error cloning repo, see $log >&2
