@@ -106,6 +106,19 @@ function report_value() {
 	echo $1 \'$2\'
     fi
 }
+function add_toolshed() {
+    # Add a toolshed definition
+    # 1: xml config file
+    local xml_file=$1
+    echo -n Adding toolshed \"$2\" \($3\) to $xml_file...
+    sed -i 's,</tool_sheds>,<tool_shed name=\"'"$2"'\" url=\"'"$3"'\"/>\n</tool_sheds>,' $xml_file
+    if [ $? -ne 0 ] ; then
+	echo FAILED
+	exit 1
+    else
+	echo done
+    fi
+}
 # Main script
 GALAXY_DIR=
 port=
@@ -250,11 +263,12 @@ elif [ "$vcs" == "git" ] ; then
     # Check for git
     check_program git
     # Using git clone
-    git_clone $galaxy_repo
+    git_clone --log $LOG_FILE $galaxy_repo
     galaxy_src=$(basename $galaxy_repo)
     cd $galaxy_src
+    run_command --log $LOG_FILE "Switching to master branch" git checkout -b master origin/master
     if [ ! -z "$release_tag" ] ; then
-	run_command --log $LOG_FILE "Switching to releas tag $release_tag" git checkout $release_tag
+	run_command --log $LOG_FILE "Switching to release tag $release_tag" git checkout $release_tag
     fi
 else
     # Unknown VCS
@@ -281,6 +295,16 @@ configure_galaxy $CONFIG_FILE allow_user_dataset_purge True
 if [ ! -z "$use_master_api_key" ] ; then
     master_api_key=$(pwgen 16 1)
     configure_galaxy $CONFIG_FILE master_api_key $master_api_key
+fi
+# Toolshed settings
+if [ -f config/tool_shed.ini.sample ] ; then
+    run_command "Creating config/tool_shed.ini file" cp config/tool_shed.ini.sample config/tool_shed.ini
+    configure_galaxy config/tool_shed.ini admin_users $admin_users
+fi
+# Add local toolshed to tool_sheds_conf.xml
+if [ -f config/tool_sheds_conf.xml.sample ] ; then
+    run_command "Creating config/tool_sheds_conf.xml file" cp config/tool_sheds_conf.xml.sample config/tool_sheds_conf.xml
+    add_toolshed config/tool_sheds_conf.xml "Local Tool Shed" http://127.0.0.1:9009/
 fi
 # Initialise: fetch eggs & copy sample files
 if [ -f scripts/common_startup.sh ] ; then
