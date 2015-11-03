@@ -25,6 +25,7 @@ Options
    --release TAG  Update Galaxy code to release TAG
    --name         Name to use as the 'brand' (defaults
                   to the directory name)
+   --bare         Only clone the code
    --repo URL     Specify repository to install Galaxy
                   code from (defaults to
                   https://github.com/galaxyproject/galaxy)
@@ -129,6 +130,7 @@ name=
 use_master_api_key=
 install_numpy=
 vcs=
+bare=
 # Command line
 while [ $# -ge 1 ] ; do
     case "$1" in
@@ -161,6 +163,9 @@ while [ $# -ge 1 ] ; do
 	--vcs)
 	    shift
 	    vcs=$1
+	    ;;
+	--bare)
+	    bare=yes
 	    ;;
 	-h|--help)
 	    usage
@@ -206,6 +211,9 @@ report_value "Set name to" $name
 report_value "Set port to" $port
 report_value "Set admin users to" $admin_users
 report_value "Set release tag to" $release_tag
+if [ ! -z "$bare" ] ; then
+    echo "Perform 'bare' install only"
+fi
 # Check prerequisites
 check_program python
 check_program virtualenv
@@ -306,64 +314,66 @@ if [ -f config/tool_sheds_conf.xml.sample ] ; then
     run_command "Creating config/tool_sheds_conf.xml file" cp config/tool_sheds_conf.xml.sample config/tool_sheds_conf.xml
     add_toolshed config/tool_sheds_conf.xml "Local Tool Shed" http://127.0.0.1:9009/
 fi
-# Initialise: fetch eggs & copy sample files
-if [ -f scripts/common_startup.sh ] ; then
-    run_command --log $LOG_FILE "Initialising eggs and sample files" \
-	scripts/common_startup.sh
-else
-    run_command --log $LOG_FILE "Fetching python eggs" \
-	python scripts/fetch_eggs.py
-    run_command --log $LOG_FILE "Copying sample files" \
-	scripts/copy_sample_files.sh
-fi
-# Deal with tool conf files
-# Newer versions of Galaxy (post 2014.08.11?) don't create tool_conf.xml
-# by default, and also expect it to be in the 'config' subdirectory
-config_dir=$(dirname $CONFIG_FILE)
-CONF_FILES=
-for tool_conf_xml in tool_conf.xml shed_tool_conf.xml ; do
-    tool_conf_xml=$config_dir/$tool_conf_xml
-    if [ ! -f $tool_conf_xml ] ; then
-	if [ -f $tool_conf_xml.sample ] ; then
-	    echo -n "Creating $tool_conf_xml from sample file..."
-	    cp $tool_conf_xml.sample $tool_conf_xml
-	    echo done
-	elif [ ! -f $tool_conf_xml.sample ] ; then
-	    echo WARNING no $tool_conf_xml file and no sample file
-	fi
+# Initialise (non-bare installs only)
+if [ -z "$bare" ] ; then
+    # Fetch eggs & copy sample files
+    if [ -f scripts/common_startup.sh ] ; then
+	run_command --log $LOG_FILE "Initialising eggs and sample files" \
+	    scripts/common_startup.sh
     else
-	echo Found existing $tool_conf_xml file
+	run_command --log $LOG_FILE "Fetching python eggs" \
+	    python scripts/fetch_eggs.py
+	run_command --log $LOG_FILE "Copying sample files" \
+	    scripts/copy_sample_files.sh
     fi
-    if [ -f $tool_conf_xml ] ; then
-	if [ -z "$CONF_FILES" ] ; then
-	    CONF_FILES=$tool_conf_xml
+    # Deal with tool conf files
+    # Newer versions of Galaxy (post 2014.08.11?) don't create tool_conf.xml
+    # by default, and also expect it to be in the 'config' subdirectory
+    config_dir=$(dirname $CONFIG_FILE)
+    CONF_FILES=
+    for tool_conf_xml in tool_conf.xml shed_tool_conf.xml ; do
+	tool_conf_xml=$config_dir/$tool_conf_xml
+	if [ ! -f $tool_conf_xml ] ; then
+	    if [ -f $tool_conf_xml.sample ] ; then
+		echo -n "Creating $tool_conf_xml from sample file..."
+		cp $tool_conf_xml.sample $tool_conf_xml
+		echo done
+	    elif [ ! -f $tool_conf_xml.sample ] ; then
+		echo WARNING no $tool_conf_xml file and no sample file
+	    fi
 	else
-	    CONF_FILES=$CONF_FILES,$tool_conf_xml
+	    echo Found existing $tool_conf_xml file
 	fi
+	if [ -f $tool_conf_xml ] ; then
+	    if [ -z "$CONF_FILES" ] ; then
+		CONF_FILES=$tool_conf_xml
+	    else
+		CONF_FILES=$CONF_FILES,$tool_conf_xml
+	    fi
+	fi
+    done
+    if [ ! -z "$CONF_FILES" ] ; then
+	configure_galaxy $CONFIG_FILE tool_config_file "$CONF_FILES"
     fi
-done
-if [ ! -z "$CONF_FILES" ] ; then
-    configure_galaxy $CONFIG_FILE tool_config_file "$CONF_FILES"
-fi
-# Create database and migrate tools
-run_command --log $LOG_FILE "Creating the database" python scripts/create_db.py
-run_command --log $LOG_FILE "Migrating tools" sh manage_tools.sh upgrade
-cd ..
-# Create directories for local and shed tools
-echo Creating supporting directories
-create_directory local_tools
-create_directory shed_tools
-create_directory tool_dependencies
-# Make conf file for local tools
-echo -n Creating empty local_tool_conf.xml file...
-if [ -d $galaxy_src/config ] ; then
-    tool_conf_xml=config/local_tool_conf.xml
-    tool_path=../../local_tools
-else
-    tool_conf_xml=local_tool_conf.xml
-    tool_path=../local_tools
-fi
-cat > $galaxy_src/$tool_conf_xml <<EOF
+    # Create database and migrate tools
+    run_command --log $LOG_FILE "Creating the database" python scripts/create_db.py
+    run_command --log $LOG_FILE "Migrating tools" sh manage_tools.sh upgrade
+    cd ..
+    # Create directories for local and shed tools
+    echo Creating supporting directories
+    create_directory local_tools
+    create_directory shed_tools
+    create_directory tool_dependencies
+    # Make conf file for local tools
+    echo -n Creating empty local_tool_conf.xml file...
+    if [ -d $galaxy_src/config ] ; then
+	tool_conf_xml=config/local_tool_conf.xml
+	tool_path=../../local_tools
+    else
+	tool_conf_xml=local_tool_conf.xml
+	tool_path=../local_tools
+    fi
+    cat > $galaxy_src/$tool_conf_xml <<EOF
 <?xml version="1.0"?>
 <toolbox tool_path="$tool_path">
 <label id="local_tools" text="Local Tools" />
@@ -373,9 +383,10 @@ cat > $galaxy_src/$tool_conf_xml <<EOF
   </section>
 </toolbox>
 EOF
-echo done
-CONF_FILES=$(get_galaxy_parameter tool_config_file $galaxy_src/$CONFIG_FILE),$tool_conf_xml
-configure_galaxy $galaxy_src/$CONFIG_FILE tool_config_file "$CONF_FILES"
+    echo done
+    CONF_FILES=$(get_galaxy_parameter tool_config_file $galaxy_src/$CONFIG_FILE),$tool_conf_xml
+    configure_galaxy $galaxy_src/$CONFIG_FILE tool_config_file "$CONF_FILES"
+fi
 # 
 # Create wrapper script to run galaxy
 echo -n Making wrapper script \'run_galaxy.sh\'...
