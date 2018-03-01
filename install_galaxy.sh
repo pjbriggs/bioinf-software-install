@@ -218,8 +218,6 @@ fi
 check_program python
 check_program virtualenv
 check_program pwgen
-check_program R
-check_program samtools
 # Start
 create_directory $GALAXY_DIR
 cd $GALAXY_DIR
