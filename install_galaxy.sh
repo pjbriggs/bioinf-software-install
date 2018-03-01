@@ -37,10 +37,22 @@ Options
                   Set the master API key to a random
                   value (waring: don't use for a
                   public instance)
+   --make-virtualenv
+                  Create a Python virtualenv for Galaxy
+                  (by default leave Galaxt to make its
+                  own virtualenv)
+
+Deprecated options
    --install-numpy
                   Install numpy into the virtualenv
-                  (warning: may conflict with tool
-                  dependencies from toolsheds)
+                  (implies --make-virtualenv; may
+                  conflict with tool dependencies from
+                  toolsheds)
+   --install-bioblend
+                  Install bioblend into the virtualenv
+                  (implies --make-virtualenv; may
+                  conflict with tool dependencies from
+                  toolsheds)
 EOF
 }
 function configure_galaxy() {
@@ -128,7 +140,9 @@ galaxy_repo=https://github.com/galaxyproject/galaxy
 release_tag=
 name=
 use_master_api_key=
+make_virtualenv=
 install_numpy=
+install_bioblend=
 vcs=
 bare=
 # Command line
@@ -157,8 +171,16 @@ while [ $# -ge 1 ] ; do
 	--master-api-key)
 	    use_master_api_key=yes
 	    ;;
+	--make-virtualenv)
+	    make_virtualenv=yes
+	    ;;
 	--with-numpy)
+	    make_virtualenv=yes
 	    install_numpy=yes
+	    ;;
+	--with-bioblend)
+	    make_virtualenv=yes
+	    install_bioblend=yes
 	    ;;
 	--vcs)
 	    shift
@@ -216,7 +238,6 @@ if [ ! -z "$bare" ] ; then
 fi
 # Check prerequisites
 check_program python
-check_program virtualenv
 check_program pwgen
 # Start
 create_directory $GALAXY_DIR
@@ -225,14 +246,19 @@ cd $GALAXY_DIR
 LOG_FILE=$(pwd)/install.galaxy.$(basename $GALAXY_DIR).log
 clean_up_file $LOG_FILE
 # Create and activate a Python virtualenv for this instance
-create_virtualenv galaxy_venv
-activate_virtualenv galaxy_venv
-# Install NumPy
-if [ ! -z "$install_numpy" ] ; then
-    pip_install galaxy_venv/bin numpy
+if [ ! -z "$make_virtualenv" ] ; then
+    check_program virtualenv
+    create_virtualenv galaxy_venv
+    activate_virtualenv galaxy_venv
+    # Install NumPy
+    if [ ! -z "$install_numpy" ] ; then
+	pip_install galaxy_venv/bin numpy
+    fi
+    # Install bioblend
+    if [ ! -z "$install_bioblend" ] ; then
+	pip_install galaxy_venv/bin bioblend
+    fi
 fi
-# Install bioblend
-pip_install galaxy_venv/bin bioblend
 # Detect whether we're using git(hub)
 if [ -z "$vcs" ] ; then
     echo -n Setting VCS...
@@ -402,8 +428,10 @@ if [ ! -z "\$@" ] ; then
 else
   echo
 fi
-# Activate virtualenv
-. \$GALAXY_DIR/galaxy_venv/bin/activate
+if [ ! -z "$make_virtualenv" ] ; then
+  # Activate virtualenv
+  . \$GALAXY_DIR/galaxy_venv/bin/activate
+fi
 # Run Galaxy with the specified options
 cd \$GALAXY_DIR/$galaxy_src
 sh run.sh \$@ 2>&1
@@ -429,9 +457,11 @@ if [ ! -z "\$@" ] ; then
 else
   echo
 fi
-# Activate virtualenv
-. \$GALAXY_DIR/galaxy_venv/bin/activate
-# Run Galaxy with the specified options
+if [ ! -z "$make_virtualenv" ] ; then
+  # Activate virtualenv
+  . \$GALAXY_DIR/galaxy_venv/bin/activate
+fi
+# Run Galaxy toolshed with the specified options
 cd \$GALAXY_DIR/$galaxy_src
 sh run_tool_shed.sh \$@ 2>&1
 ##
@@ -440,7 +470,9 @@ EOF
 chmod +x run_toolshed.sh
 echo done
 # Finished
-deactivate
+if [ ! -z "$make_virtualenv" ] ; then
+    deactivate
+fi
 echo "Finished installing Galaxy in $GALAXY_DIR"
 ##
 #
